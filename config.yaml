@@ -1,0 +1,74 @@
+# Configuration file for Sanskrit Manuscript Pipeline
+
+# Model Configuration
+model:
+  size: 'base'  # 'tiny', 'small', 'base', 'large'
+  img_size: 256
+  patch_size: 16
+  use_skip_connections: true
+
+# Training Configuration
+training:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 1.0e-4
+  weight_decay: 0.01
+  num_workers: 4
+  save_every: 5
+
+  # Loss weights
+  l1_weight: 1.0
+  perceptual_weight: 0.1
+
+# Data Configuration
+data:
+  train_dir: 'data/raw'
+  val_dir: null
+  synthetic_degradation: true
+  augmentation: true
+
+# OCR Configuration
+ocr:
+  engine: 'tesseract'  # 'tesseract' or 'trocr'
+  language: 'san'  # Sanskrit
+  preprocess: true
+
+  # Tesseract settings
+  tesseract:
+    psm: 6  # Page segmentation mode
+    oem: 3  # OCR Engine mode
+
+# Translation Configuration
+translation:
+  method: 'google'  # 'google', 'indictrans', or 'ensemble'
+  source_lang: 'san'  # Sanskrit
+  target_lang: 'en'   # English
+
+# Pipeline Configuration
+pipeline:
+  restoration_enabled: true
+  ocr_enabled: true
+  normalization_enabled: true
+  translation_enabled: true
+  save_intermediate: true
+
+# Output Configuration
+output:
+  output_dir: 'output'
+  save_images: true
+  save_text: true
+  save_json: true
+  image_format: 'jpg'
+  image_quality: 95
+
+# Device Configuration
+device: 'auto'  # 'auto', 'cuda', or 'cpu'
+
+# Logging Configuration
+logging:
+  use_wandb: false
+  wandb_project: 'sanskrit-manuscript-restoration'
+  tensorboard: true
+  log_dir: 'logs'
+  verbose: true
+

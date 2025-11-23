@@ -1,0 +1,230 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                   📋 ROBOFLOW DATASET - QUICK REFERENCE                     │
+│                     Sanskrit Manuscript OCR Dataset                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🚀 QUICK START (3 COMMANDS)                                                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+1. Get API key from: https://app.roboflow.com/settings/api
+
+2. Download dataset:
+   bash setup_roboflow.sh
+
+3. Start training:
+   python3 train.py --train_dir data/raw/train --val_dir data/raw/val
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📁 AVAILABLE SCRIPTS                                                        ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Script Name                    Purpose
+──────────────────────────────────────────────────────────────────────────
+setup_roboflow.sh              Interactive dataset download (RECOMMENDED)
+download_roboflow_dataset.py   Python download script with API key
+check_dataset.sh               Verify dataset installation status
+ROBOFLOW_SETUP.md              Complete setup documentation
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ ⚡ COMMAND REFERENCE                                                        ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+DATASET MANAGEMENT
+──────────────────────────────────────────────────────────────────────────
+# Interactive setup (easiest)
+bash setup_roboflow.sh
+
+# Direct download with API key
+python3 download_roboflow_dataset.py --api-key YOUR_KEY
+
+# Show instructions
+python3 download_roboflow_dataset.py --instructions
+
+# Check dataset status
+bash check_dataset.sh
+
+# Count downloaded images
+echo "Train: $(ls data/raw/train/*.{jpg,png} 2>/dev/null | wc -l)"
+echo "Val:   $(ls data/raw/val/*.{jpg,png} 2>/dev/null | wc -l)"
+echo "Test:  $(ls data/raw/test/*.{jpg,png} 2>/dev/null | wc -l)"
+
+TRAINING COMMANDS
+──────────────────────────────────────────────────────────────────────────
+# Basic training (100 epochs)
+python3 train.py \
+    --train_dir data/raw/train \
+    --val_dir data/raw/val \
+    --epochs 100 \
+    --batch_size 16
+
+# Advanced training with monitoring
+python3 train.py \
+    --train_dir data/raw/train \
+    --val_dir data/raw/val \
+    --img_size 512 \
+    --epochs 200 \
+    --batch_size 8 \
+    --lr 1e-4 \
+    --save_dir models/checkpoints \
+    --use_wandb
+
+# Resume from checkpoint
+python3 train.py \
+    --train_dir data/raw/train \
+    --val_dir data/raw/val \
+    --checkpoint models/checkpoints/best_model.pth
+
+INFERENCE COMMANDS
+──────────────────────────────────────────────────────────────────────────
+# Process single image (full pipeline)
+python3 main.py --image_path your_manuscript.jpg
+
+# Restore image only
+python3 inference.py --image_path your_manuscript.jpg
+
+# Run OCR on restored image
+python3 ocr/run_ocr.py --image_path output/restored.jpg
+
+VERIFICATION COMMANDS
+──────────────────────────────────────────────────────────────────────────
+# Test project setup
+python3 test_setup.py
+
+# View sample images
+ls data/raw/train/ | head -20
+
+# Check GPU availability
+python3 -c "import torch; print(f'CUDA: {torch.cuda.is_available()}')"
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📊 DATASET INFORMATION                                                      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Dataset URL:   https://universe.roboflow.com/sanskritocr/yoyoyo-mptyx/browse
+Project Name:  sanskritocr/yoyoyo-mptyx
+Version:       1
+Format:        folder (raw images)
+Content:       Sanskrit manuscripts in Devanagari script
+License:       Free for research/academic use
+
+Expected Structure After Download:
+───────────────────────────────────
+data/raw/
+├── train/          (~70-80% of images)
+├── val/            (~10-15% of images)
+└── test/           (~10-15% of images)
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🔧 TROUBLESHOOTING                                                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Problem: "roboflow module not found"
+Solution: pip install roboflow
+
+Problem: "Invalid API key"
+Solution: Get fresh key from https://app.roboflow.com/settings/api
+
+Problem: "Permission denied"
+Solution: chmod +x setup_roboflow.sh check_dataset.sh
+
+Problem: "No images found after download"
+Solution: Run bash check_dataset.sh to diagnose
+          Check data/datasets/roboflow_sanskrit/ for downloaded files
+
+Problem: "Download interrupted"
+Solution: Re-run bash setup_roboflow.sh (safe to retry)
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📚 DOCUMENTATION FILES                                                      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+File                          Description
+──────────────────────────────────────────────────────────────────────────
+ROBOFLOW_SETUP.md             Complete Roboflow dataset guide
+DATASET_REQUIREMENTS.md       All dataset options and requirements
+README.md                     Main project documentation
+GETTING_STARTED.md            Project setup guide
+QUICKSTART.md                 Quick command reference
+RUN_REPORT.md                 Example results and outputs
+PROJECT_SUMMARY.md            Project overview
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ ✅ SETUP CHECKLIST                                                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Pre-Download:
+ □ Roboflow account created (https://app.roboflow.com)
+ □ API key obtained (Settings → Roboflow API)
+ □ Virtual environment activated (source venv/bin/activate)
+ □ Roboflow package installed (pip install roboflow)
+
+Post-Download:
+ □ Images in data/raw/train/
+ □ Images in data/raw/val/
+ □ Images in data/raw/test/
+ □ Dataset status verified (bash check_dataset.sh)
+ □ Ready to train!
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🎯 TYPICAL WORKFLOW                                                         ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Step 1: Setup Environment
+──────────────────────────
+cd /home/bagesh/EL-project
+source venv/bin/activate
+
+Step 2: Download Dataset
+─────────────────────────
+bash setup_roboflow.sh
+# Enter your API key when prompted
+
+Step 3: Verify Download
+────────────────────────
+bash check_dataset.sh
+
+Step 4: Train Model
+───────────────────
+python3 train.py --train_dir data/raw/train --val_dir data/raw/val
+
+Step 5: Monitor Training
+────────────────────────
+# Check logs
+tail -f logs/training.log
+
+# Or use TensorBoard
+tensorboard --logdir logs/
+
+Step 6: Test on Your Images
+────────────────────────────
+python3 main.py --image_path your_manuscript.jpg
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 💡 PRO TIPS                                                                 ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+1. Start with fewer epochs (10-20) to test your setup works
+2. Use smaller batch_size if you encounter memory errors
+3. Enable --use_wandb for beautiful training visualizations
+4. Save checkpoints frequently (auto-enabled in train.py)
+5. Test on validation set periodically during training
+6. Keep original images - the model creates copies
+7. Use GPU if available (much faster training)
+8. Monitor PSNR and SSIM metrics for quality assessment
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 🔗 USEFUL LINKS                                                             ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Roboflow Account:    https://app.roboflow.com/
+Dataset Browser:     https://universe.roboflow.com/sanskritocr/yoyoyo-mptyx
+API Settings:        https://app.roboflow.com/settings/api
+Roboflow Docs:       https://docs.roboflow.com/
+API Reference:       https://docs.roboflow.com/api-reference/authentication
+
+└─────────────────────────────────────────────────────────────────────────────┘
+                        Last Updated: November 21, 2025
+                             Ready to train! 🕉️📜
+└─────────────────────────────────────────────────────────────────────────────┘
+

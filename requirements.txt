@@ -1,0 +1,54 @@
+# Core Deep Learning
+ipywidgets>=8.0.0
+jupyter>=1.0.0
+# Jupyter
+
+tensorboard>=2.13.0
+pyyaml>=6.0
+wandb>=0.15.0
+# Logging & Config
+
+kaggle>=1.5.16
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+roboflow>=1.1.0
+# Dataset Management
+
+lpips>=0.1.4
+scikit-learn>=1.3.0
+# Metrics
+
+seaborn>=0.12.0
+matplotlib>=3.7.0
+pandas>=2.0.0
+tqdm>=4.65.0
+# Utilities
+
+sacremoses>=0.0.53
+googletrans==4.0.0rc1
+# Translation
+
+aksharamukha>=1.0.0
+indic-nlp-library>=0.91
+indic-transliteration>=2.3.0
+# Sanskrit/Devanagari Processing
+
+sentencepiece>=0.1.99
+transformers>=4.30.0
+pytesseract>=0.3.10
+# OCR
+
+numpy>=1.24.0
+scikit-image>=0.21.0
+Pillow>=10.0.0
+opencv-python>=4.8.0
+# Image Processing
+
+einops>=0.6.1
+timm>=0.9.0
+torchvision>=0.15.0
+torch>=2.0.0
+
+streamlit>=1.28.0
+# Web Interface
+

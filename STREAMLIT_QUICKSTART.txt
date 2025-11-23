@@ -1,0 +1,74 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║           🌐 STREAMLIT WEB INTERFACE - QUICK START 🌐                ║
+║                                                                      ║
+║             Sanskrit Manuscript Processing Pipeline                  ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 START THE APP (3 OPTIONS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. Quick Launch (Easiest):
+     $ ./run_app.sh
+  2. Manual Launch:
+     $ source venv/bin/activate
+     $ streamlit run app.py
+  3. With Custom Port:
+     $ streamlit run app.py --server.port 8502
+  🌐 Access at: http://localhost:8501
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📱 HOW TO USE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Step 1: Upload Image
+    • Click "Browse files" or drag & drop
+    • Supports: JPEG, PNG, TIFF, BMP
+    • Recommended: 512×512+ resolution
+  Step 2: Configure (Optional)
+    • Open sidebar for settings
+    • Choose OCR engine
+    • Select translation method
+    • Upload model if available
+  Step 3: Process
+    • Click "🚀 Process Manuscript"
+    • Wait 2-10 seconds
+    • Results appear automatically
+  Step 4: Download
+    • Go to Results tab
+    • Click download buttons
+    • Get JSON, text, or images
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 CONFIGURATION PRESETS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fast Processing (2-3 sec):
+    • OCR: Tesseract
+    • Translation: Google
+    • Restoration: OFF
+  Balanced (5-7 sec):
+    • OCR: TrOCR
+    • Translation: IndicTrans
+    • Restoration: Optional
+  Best Quality (10-15 sec):
+    • OCR: Ensemble
+    • Translation: Ensemble
+    • Restoration: ON
+    • All metrics: ON
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📖 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STREAMLIT_README.md         Quick reference
+  STREAMLIT_GUIDE.md           Complete guide
+  app.py                       Source code
+  .streamlit/config.toml       Configuration
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🆘 TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Problem: App won't start
+  → pip install streamlit
+  Problem: Port in use
+  → streamlit run app.py --server.port 8502
+  Problem: Processing fails
+  → Check image format & size
+  → Try different OCR engine
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Ready? Run: ./run_app.sh
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,0 +1,275 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║            TRAINING PROCESS FOR SANSKRIT MANUSCRIPT RESTORATION              ║
+║                         593 Images Ready for Training                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 YOUR DATASET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Training:     415 images (70%)
+  Validation:   119 images (20%)
+  Test:         59 images  (10%)
+  ────────────────────────────
+  TOTAL:        593 images
+
+  Format:       RGB JPG
+  Content:      Sanskrit manuscripts (Devanagari script)
+  Source:       Roboflow (neeew/yoyoyo-mptyx-ijqfp v1)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 TRAINING STRATEGY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SELF-SUPERVISED LEARNING with SYNTHETIC DEGRADATION
+
+Step 1:  Clean Image (from your dataset)
+         ↓
+Step 2:  Apply Synthetic Degradation
+         • Gaussian noise
+         • Gaussian blur
+         • JPEG compression artifacts
+         • Contrast reduction
+         ↓
+Step 3:  Degraded Image → ViT Model → Restored Image
+         ↓
+Step 4:  Compare Restored vs Original Clean
+         ↓
+Step 5:  Calculate Loss & Update Model Weights
+         ↓
+Step 6:  Repeat for all 415 training images
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧠 MODEL ARCHITECTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Vision Transformer (ViT) for Image Restoration
+
+  Input:  Degraded Image (256×256 RGB)
+          ↓
+  Layer 1: Patch Embedding (16×16 patches)
+          ↓
+  Layer 2: Positional Encoding
+          ↓
+  Layers 3-14: Transformer Encoder (12 layers)
+          • Multi-Head Self-Attention (12 heads)
+          • Feed-Forward Networks
+          • Layer Normalization
+          • Residual Connections
+          ↓
+  Layer 15: Decoder with Upsampling
+          ↓
+  Output: Restored Image (256×256 RGB)
+
+  Parameters: ~86 Million
+  Embedding Dimension: 768
+  Attention Heads: 12
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔄 TRAINING LOOP (PER EPOCH)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TRAINING PHASE:
+  • Process 26 batches (415 images ÷ 16 per batch)
+  • For each batch:
+    1. Load 16 clean images
+    2. Apply synthetic degradation
+    3. Forward pass through model
+    4. Calculate combined loss
+    5. Backpropagate gradients
+    6. Clip gradients (max norm = 1.0)
+    7. Update model weights
+    8. Update learning rate
+    9. Track metrics every 10 batches
+
+  Time: ~2-4 minutes per epoch (CPU)
+
+VALIDATION PHASE:
+  • Process 8 batches (119 images ÷ 16 per batch)
+  • For each batch:
+    1. Load 16 clean images
+    2. Apply synthetic degradation
+    3. Forward pass (no gradient computation)
+    4. Calculate metrics (PSNR, SSIM, Loss)
+
+  Time: ~30-60 seconds per epoch (CPU)
+
+CHECKPOINTING:
+  • Save if best PSNR achieved
+  • Save if best loss achieved
+  • Save every 5 epochs
+  • Log all metrics
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📏 LOSS FUNCTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Combined Loss = L1 + 0.1×Perceptual + 0.1×SSIM
+
+  L1 Loss:          Pixel-wise accuracy
+                    = mean(|restored - clean|)
+
+  Perceptual Loss:  Visual quality (VGG features)
+                    = mean(|VGG(restored) - VGG(clean)|)
+
+  SSIM Loss:        Structural similarity
+                    = 1 - SSIM(restored, clean)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 METRICS TRACKED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quality Metrics:
+  • PSNR (Peak Signal-to-Noise Ratio)
+    Target: >25 dB (good), >30 dB (excellent)
+
+  • SSIM (Structural Similarity Index)
+    Target: >0.85 (good), >0.90 (excellent)
+
+  • Loss (Combined loss value)
+    Should decrease over epochs
+
+Training Metrics:
+  • Learning rate
+  • Gradient norm
+  • Time per epoch
+  • Memory usage
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⏱️  EXPECTED TIMELINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ON CPU:
+  Epochs    Time           Purpose
+  ──────────────────────────────────────────
+  5         15-25 min      Quick test
+  10        30-50 min      Verify setup
+  50        2.5-4 hours    Decent results
+  100       5-8 hours      Good results ⭐
+  200       10-16 hours    Best results
+
+ON GPU (if available):
+  Epochs    Time           Purpose
+  ──────────────────────────────────────────
+  5         2-5 min        Quick test
+  10        5-10 min       Verify setup
+  50        25-50 min      Decent results
+  100       50-100 min     Good results ⭐
+  200       1.5-3 hours    Best results
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📈 EXPECTED PROGRESS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Epoch    PSNR     SSIM    Loss    What's Happening
+────────────────────────────────────────────────────────────────────
+1-10     15-20dB  0.6-0.7  High    Initial learning, basic structure
+10-50    20-25dB  0.75-0.85 Med    Details emerge, quality improves
+50-100   25-28dB  0.85-0.90 Low    Fine-tuning, refinement
+100-200  28-30dB  0.90-0.92 VLow   Convergence, minimal improvement
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 TRAINING COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. QUICK TEST (5 epochs, ~15 minutes):
+
+   cd /home/bagesh/EL-project
+   source venv/bin/activate
+   python3 train.py \
+       --train_dir data/raw/train \
+       --val_dir data/raw/val \
+       --epochs 5 \
+       --batch_size 16
+
+
+2. STANDARD TRAINING (100 epochs, ~5-8 hours) ⭐ RECOMMENDED:
+
+   python3 train.py \
+       --train_dir data/raw/train \
+       --val_dir data/raw/val \
+       --epochs 100 \
+       --batch_size 16 \
+       --img_size 256
+
+
+3. HIGH-QUALITY TRAINING (200 epochs, ~10-16 hours):
+
+   python3 train.py \
+       --train_dir data/raw/train \
+       --val_dir data/raw/val \
+       --epochs 200 \
+       --batch_size 8 \
+       --img_size 512 \
+       --use_wandb
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💾 OUTPUT FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+After training completes, you'll have:
+
+models/checkpoints/
+├── best_psnr.pth           ← Best performing model (USE THIS)
+├── best_loss.pth           ← Lowest loss model
+├── epoch_5.pth             ← Periodic saves
+├── epoch_10.pth
+├── ...
+├── final.pth               ← Final epoch
+└── training_history.json   ← All metrics & progress
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ SUCCESS CRITERIA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Your model is ready when:
+  ✓ Validation PSNR > 25 dB
+  ✓ Validation SSIM > 0.85
+  ✓ Validation loss stops decreasing
+  ✓ Train/val losses are similar (no overfitting)
+  ✓ Visual quality looks good
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 START TRAINING NOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Recommended first command:
+
+cd /home/bagesh/EL-project
+source venv/bin/activate
+python3 train.py --train_dir data/raw/train --val_dir data/raw/val --epochs 100
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  TRAINING_PROCESS.md     ← Detailed technical explanation
+  TRAINING_OVERVIEW.md    ← Visual diagrams & workflow
+  README.md               ← General project information
+  QUICKSTART.md           ← Quick commands
+
+Read with: cat TRAINING_PROCESS.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ YOU'RE READY TO TRAIN!
+
+Your 593 Sanskrit manuscript images are organized and ready.
+The training process is fully automated and optimized.
+Just run the command above and let it train!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
