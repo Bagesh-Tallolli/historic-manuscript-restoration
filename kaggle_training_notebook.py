@@ -25,7 +25,7 @@ Dataset Structure Expected:
 
 # Run this in a Kaggle cell:
 """
-!pip install einops lpips wandb -q
+!pip install einops lpips roboflow kaggle gdown -q
 """
 
 # ============================================================================
@@ -45,10 +45,176 @@ import random
 from tqdm import tqdm
 import json
 import time
+import os
+import zipfile
+import urllib.request
 from einops import rearrange
 from einops.layers.torch import Rearrange
 import lpips
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
+
+# ============================================================================
+# SECTION 2A: DATASET DOWNLOAD UTILITIES
+# ============================================================================
+
+class DatasetDownloader:
+    """Download datasets from various sources"""
+
+    @staticmethod
+    def download_from_roboflow(api_key, workspace, project, version, location="/kaggle/working/dataset"):
+        """
+        Download dataset from Roboflow
+
+        Args:
+            api_key: Your Roboflow API key
+            workspace: Roboflow workspace name
+            project: Project name
+            version: Dataset version
+            location: Where to save the dataset
+        """
+        try:
+            from roboflow import Roboflow
+
+            print("📥 Downloading dataset from Roboflow...")
+            rf = Roboflow(api_key=api_key)
+            project = rf.workspace(workspace).project(project)
+            dataset = project.version(version).download("folder", location=location)
+
+            print(f"✓ Dataset downloaded to: {location}")
+            return location
+        except Exception as e:
+            print(f"❌ Error downloading from Roboflow: {e}")
+            return None
+
+    @staticmethod
+    def download_from_kaggle_dataset(dataset_name, location="/kaggle/working/dataset"):
+        """
+        Download dataset from Kaggle Datasets
+
+        Args:
+            dataset_name: Kaggle dataset name (e.g., 'username/dataset-name')
+            location: Where to save the dataset
+        """
+        try:
+            import kaggle
+
+            print(f"📥 Downloading dataset from Kaggle: {dataset_name}")
+            os.makedirs(location, exist_ok=True)
+
+            # Download using Kaggle API
+            kaggle.api.dataset_download_files(dataset_name, path=location, unzip=True)
+
+            print(f"✓ Dataset downloaded to: {location}")
+            return location
+        except Exception as e:
+            print(f"❌ Error downloading from Kaggle: {e}")
+            print("Make sure you have kaggle.json in ~/.kaggle/ or /root/.kaggle/")
+            return None
+
+    @staticmethod
+    def download_from_url(url, location="/kaggle/working/dataset"):
+        """
+        Download dataset from direct URL (zip file)
+
+        Args:
+            url: Direct URL to zip file
+            location: Where to save the dataset
+        """
+        try:
+            print(f"📥 Downloading dataset from URL...")
+            os.makedirs(location, exist_ok=True)
+
+            zip_path = f"{location}/dataset.zip"
+
+            # Download with progress bar
+            def reporthook(count, block_size, total_size):
+                percent = int(count * block_size * 100 / total_size)
+                print(f"\rDownloading: {percent}%", end='')
+
+            urllib.request.urlretrieve(url, zip_path, reporthook)
+            print("\n")
+
+            # Extract
+            print("📦 Extracting dataset...")
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(location)
+
+            # Remove zip file
+            os.remove(zip_path)
+
+            print(f"✓ Dataset downloaded and extracted to: {location}")
+            return location
+        except Exception as e:
+            print(f"❌ Error downloading from URL: {e}")
+            return None
+
+    @staticmethod
+    def download_from_google_drive(file_id, location="/kaggle/working/dataset"):
+        """
+        Download dataset from Google Drive
+
+        Args:
+            file_id: Google Drive file ID
+            location: Where to save the dataset
+        """
+        try:
+            import gdown
+
+            print(f"📥 Downloading dataset from Google Drive...")
+            os.makedirs(location, exist_ok=True)
+
+            zip_path = f"{location}/dataset.zip"
+            url = f"https://drive.google.com/uc?id={file_id}"
+
+            gdown.download(url, zip_path, quiet=False)
+
+            # Extract
+            print("📦 Extracting dataset...")
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(location)
+
+            # Remove zip file
+            os.remove(zip_path)
+
+            print(f"✓ Dataset downloaded and extracted to: {location}")
+            return location
+        except Exception as e:
+            print(f"❌ Error downloading from Google Drive: {e}")
+            return None
+
+    @staticmethod
+    def use_sample_dataset(location="/kaggle/working/dataset"):
+        """
+        Create a small sample dataset for testing
+
+        Args:
+            location: Where to create the dataset
+        """
+        print("🎨 Creating sample dataset for testing...")
+
+        train_dir = Path(location) / "train"
+        train_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create 50 random sample images
+        for i in range(50):
+            # Create a random "manuscript-like" image
+            img = np.random.randint(200, 255, (512, 512, 3), dtype=np.uint8)
+
+            # Add some text-like patterns
+            for _ in range(20):
+                x = random.randint(50, 450)
+                y = random.randint(50, 450)
+                w = random.randint(10, 100)
+                h = random.randint(5, 20)
+                color = random.randint(0, 100)
+                cv2.rectangle(img, (x, y), (x+w, y+h), (color, color, color), -1)
+
+            # Save
+            img_path = train_dir / f"sample_{i:03d}.jpg"
+            cv2.imwrite(str(img_path), img)
+
+        print(f"✓ Created {50} sample images in: {location}")
+        return str(location)
 
 # ============================================================================
 # SECTION 3: MODEL ARCHITECTURE
@@ -629,12 +795,95 @@ def main():
     MAIN TRAINING FUNCTION - MODIFY THESE SETTINGS FOR YOUR KAGGLE SETUP
     """
 
-    # ========== CONFIGURATION ==========
-    # Change these paths to match your Kaggle dataset
-    TRAIN_DIR = '/kaggle/input/your-dataset/train'  # ← CHANGE THIS
-    VAL_DIR = '/kaggle/input/your-dataset/val'      # ← CHANGE THIS (or None)
+    # ========== DATASET CONFIGURATION ==========
+    # Choose ONE of the following methods to get your dataset:
 
-    # Training settings
+    # METHOD 1: Download from Roboflow (RECOMMENDED for manuscript datasets)
+    USE_ROBOFLOW = False
+    ROBOFLOW_CONFIG = {
+        'api_key': 'YOUR_ROBOFLOW_API_KEY',  # Get from https://app.roboflow.com
+        'workspace': 'your-workspace',
+        'project': 'your-project',
+        'version': 1
+    }
+
+    # METHOD 2: Download from Kaggle Dataset
+    USE_KAGGLE_DATASET = False
+    KAGGLE_DATASET_NAME = 'username/dataset-name'  # e.g., 'user123/sanskrit-manuscripts'
+
+    # METHOD 3: Download from URL (direct link to zip file)
+    USE_URL_DOWNLOAD = False
+    DATASET_URL = 'https://example.com/dataset.zip'
+
+    # METHOD 4: Download from Google Drive
+    USE_GOOGLE_DRIVE = False
+    GOOGLE_DRIVE_FILE_ID = 'your-file-id'  # From drive link
+
+    # METHOD 5: Use pre-uploaded Kaggle input dataset
+    USE_KAGGLE_INPUT = True  # Set to True if you manually added dataset in Kaggle UI
+    TRAIN_DIR = '/kaggle/input/your-dataset/train'  # ← CHANGE THIS
+    VAL_DIR = None  # or '/kaggle/input/your-dataset/val'
+
+    # METHOD 6: Use sample dataset (for testing only)
+    USE_SAMPLE_DATASET = False
+
+    # ========== DOWNLOAD DATASET (if needed) ==========
+    dataset_location = None
+
+    if USE_ROBOFLOW:
+        print("=" * 60)
+        print("DOWNLOADING DATASET FROM ROBOFLOW")
+        print("=" * 60)
+        dataset_location = DatasetDownloader.download_from_roboflow(
+            api_key=ROBOFLOW_CONFIG['api_key'],
+            workspace=ROBOFLOW_CONFIG['workspace'],
+            project=ROBOFLOW_CONFIG['project'],
+            version=ROBOFLOW_CONFIG['version']
+        )
+        if dataset_location:
+            TRAIN_DIR = f"{dataset_location}/train"
+            VAL_DIR = f"{dataset_location}/valid" if os.path.exists(f"{dataset_location}/valid") else None
+
+    elif USE_KAGGLE_DATASET:
+        print("=" * 60)
+        print("DOWNLOADING DATASET FROM KAGGLE")
+        print("=" * 60)
+        dataset_location = DatasetDownloader.download_from_kaggle_dataset(
+            dataset_name=KAGGLE_DATASET_NAME
+        )
+        if dataset_location:
+            TRAIN_DIR = f"{dataset_location}/train"
+            VAL_DIR = f"{dataset_location}/val" if os.path.exists(f"{dataset_location}/val") else None
+
+    elif USE_URL_DOWNLOAD:
+        print("=" * 60)
+        print("DOWNLOADING DATASET FROM URL")
+        print("=" * 60)
+        dataset_location = DatasetDownloader.download_from_url(url=DATASET_URL)
+        if dataset_location:
+            TRAIN_DIR = f"{dataset_location}/train"
+            VAL_DIR = f"{dataset_location}/val" if os.path.exists(f"{dataset_location}/val") else None
+
+    elif USE_GOOGLE_DRIVE:
+        print("=" * 60)
+        print("DOWNLOADING DATASET FROM GOOGLE DRIVE")
+        print("=" * 60)
+        dataset_location = DatasetDownloader.download_from_google_drive(
+            file_id=GOOGLE_DRIVE_FILE_ID
+        )
+        if dataset_location:
+            TRAIN_DIR = f"{dataset_location}/train"
+            VAL_DIR = f"{dataset_location}/val" if os.path.exists(f"{dataset_location}/val") else None
+
+    elif USE_SAMPLE_DATASET:
+        print("=" * 60)
+        print("CREATING SAMPLE DATASET FOR TESTING")
+        print("=" * 60)
+        dataset_location = DatasetDownloader.use_sample_dataset()
+        TRAIN_DIR = f"{dataset_location}/train"
+        VAL_DIR = None
+
+    # ========== TRAINING CONFIGURATION ==========
     IMG_SIZE = 256
     BATCH_SIZE = 16
     NUM_EPOCHS = 100
@@ -642,11 +891,22 @@ def main():
     NUM_WORKERS = 2
 
     # ========== SETUP ==========
+    print("\n" + "=" * 60)
+    print("TRAINING CONFIGURATION")
+    print("=" * 60)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Using device: {device}")
+    print(f"Device: {device}")
+    print(f"Train directory: {TRAIN_DIR}")
+    print(f"Val directory: {VAL_DIR}")
+    print(f"Image size: {IMG_SIZE}")
+    print(f"Batch size: {BATCH_SIZE}")
+    print(f"Epochs: {NUM_EPOCHS}")
+    print(f"Model size: {MODEL_SIZE}")
 
     # Create datasets
-    print("\nLoading datasets...")
+    print("\n" + "=" * 60)
+    print("LOADING DATASETS")
+    print("=" * 60)
     train_dataset = ManuscriptDataset(TRAIN_DIR, img_size=IMG_SIZE, mode='train', augment=True)
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True,
                               num_workers=NUM_WORKERS, pin_memory=True)
@@ -658,7 +918,10 @@ def main():
                                num_workers=NUM_WORKERS, pin_memory=True)
 
     # Create model
-    print(f"\nCreating {MODEL_SIZE} model...")
+    print("\n" + "=" * 60)
+    print("CREATING MODEL")
+    print("=" * 60)
+    print(f"Model architecture: ViT-{MODEL_SIZE.upper()}")
     model = create_model(model_size=MODEL_SIZE, img_size=IMG_SIZE)
 
     # Count parameters
@@ -671,12 +934,25 @@ def main():
     trainer = Trainer(model, train_loader, val_loader, device=device)
 
     # Train
+    print("\n" + "=" * 60)
+    print("STARTING TRAINING")
+    print("=" * 60)
     trainer.train(num_epochs=NUM_EPOCHS, save_every=5)
 
     print("\n" + "="*60)
-    print("Training completed!")
-    print(f"Checkpoints saved to: /kaggle/working/checkpoints/")
+    print("✅ TRAINING COMPLETED SUCCESSFULLY!")
     print("="*60)
+    print(f"📁 Checkpoints saved to: /kaggle/working/checkpoints/")
+    print(f"🏆 Best model: /kaggle/working/checkpoints/best_psnr.pth")
+    print("="*60)
+
+    # Create download link
+    try:
+        from IPython.display import FileLink
+        print("\n📥 Download your trained model:")
+        display(FileLink('/kaggle/working/checkpoints/best_psnr.pth'))
+    except:
+        pass
 
 
 # ============================================================================
