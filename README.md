@@ -49,9 +49,19 @@ project/
 
 ### 1. Install Dependencies
 
+**✅ Dependency conflicts fixed!** The installation now works without any conflicts.
+
+**Quick install:**
 ```bash
 pip install -r requirements.txt
 ```
+
+**Or use the installation script:**
+```bash
+./install.sh
+```
+
+**See [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) for detailed instructions and troubleshooting.**
 
 ### 2. Install Tesseract OCR
 

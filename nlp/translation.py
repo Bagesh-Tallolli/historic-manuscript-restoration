@@ -14,11 +14,11 @@ except ImportError:
     print("Warning: transformers not available")
 
 try:
-    from googletrans import Translator as GoogleTranslator
+    from deep_translator import GoogleTranslator
     GOOGLETRANS_AVAILABLE = True
 except ImportError:
     GOOGLETRANS_AVAILABLE = False
-    print("Warning: googletrans not available")
+    print("Warning: deep-translator not available")
 
 
 class SanskritTranslator:
@@ -84,12 +84,14 @@ class SanskritTranslator:
     def _init_google(self):
         """Initialize Google Translate"""
         if not GOOGLETRANS_AVAILABLE:
-            print("Warning: googletrans not available")
+            print("Warning: deep-translator not available")
             self.google_translator = None
             return
 
         try:
-            self.google_translator = GoogleTranslator()
+            # deep-translator's GoogleTranslator is initialized per translation
+            # We just mark that it's available
+            self.google_translator = True
             print("Google Translate initialized")
         except Exception as e:
             print(f"Could not initialize Google Translate: {e}")
@@ -156,19 +158,20 @@ class SanskritTranslator:
             return self._translate_google(text, source_lang, target_lang)
 
     def _translate_google(self, text, source_lang='sa', target_lang='en'):
-        """Translate using Google Translate API"""
+        """Translate using Google Translate API via deep-translator"""
         if self.google_translator is None:
             print("Google Translate not available")
             return text  # Return original if no translation available
 
         try:
+            # deep-translator uses 'auto' for auto-detect or specific language codes
             # Google Translate uses 'sa' for Sanskrit
-            result = self.google_translator.translate(
-                text,
-                src=source_lang if source_lang != 'san' else 'sa',
-                dest=target_lang
-            )
-            return result.text
+            src = source_lang if source_lang != 'san' else 'sa'
+            
+            # Create translator instance for this translation
+            translator = GoogleTranslator(source=src, target=target_lang)
+            result = translator.translate(text)
+            return result
 
         except Exception as e:
             print(f"Google Translate error: {e}")
