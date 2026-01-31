@@ -13,6 +13,31 @@ class OCRPreprocessor:
     def __init__(self):
         pass
     
+    def enhance_for_low_quality(self, image):
+        """Enhance very low-quality manuscript regions for OCR fallback.
+        Steps: ensure RGB -> grayscale -> contrast enhance -> denoise -> adaptive binarize.
+        Returns enhanced high-contrast image.
+        """
+        if isinstance(image, Image.Image):
+            image = np.array(image)
+        # Ensure RGB
+        if len(image.shape) == 2:
+            rgb = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+        else:
+            rgb = image.copy()
+        gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+        # Contrast enhancement via CLAHE
+        clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
+        gray_enh = clahe.apply(gray)
+        # Light denoise
+        den = cv2.fastNlMeansDenoising(gray_enh, None, 10, 7, 21)
+        # Adaptive threshold
+        bin_img = cv2.adaptiveThreshold(
+            den, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY, 15, 3
+        )
+        return bin_img
+
     def preprocess(self, image, apply_all=True):
         """
         Apply complete preprocessing pipeline

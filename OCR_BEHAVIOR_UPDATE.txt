@@ -1,0 +1,169 @@
+╔══════════════════════════════════════════════════════════════╗
+║     OCR BEHAVIOR UPDATE - IMPORTANT CHANGE                   ║
+╚══════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────┐
+│  📋 WHAT CHANGED                                             │
+└──────────────────────────────────────────────────────────────┘
+
+The OCR application now ALWAYS uses the ORIGINAL image for text
+extraction and translation, regardless of the restoration setting.
+
+┌──────────────────────────────────────────────────────────────┐
+│  🔄 NEW BEHAVIOR                                             │
+└──────────────────────────────────────────────────────────────┘
+
+RESTORATION ENABLED:
+  ✓ Original image → OCR/Translation (Gemini AI)
+  ✓ Original image → Image Restoration → Display/Download
+
+  Result: You get OCR from original + restored image for viewing
+
+RESTORATION DISABLED:
+  ✓ Original image → OCR/Translation (Gemini AI)
+
+  Result: You get OCR from original only
+
+┌──────────────────────────────────────────────────────────────┐
+│  🎯 WHY THIS CHANGE                                          │
+└──────────────────────────────────────────────────────────────┘
+
+✓ OCR Quality: Original images often work better for OCR
+✓ Restoration Purpose: Enhancement is for human viewing
+✓ Flexibility: You can compare OCR results with restored view
+✓ Performance: Restoration happens in background, no delays
+
+┌──────────────────────────────────────────────────────────────┐
+│  📊 WORKFLOW NOW                                             │
+└──────────────────────────────────────────────────────────────┘
+
+1. Upload manuscript image
+   ↓
+2. [If restoration enabled]
+   → Process restoration in background
+   → Display side-by-side comparison
+   ↓
+3. Click "Analyze & Translate"
+   → ALWAYS uses ORIGINAL image for OCR
+   ↓
+4. View results + download restored image
+
+┌──────────────────────────────────────────────────────────────┐
+│  💡 USE CASES                                                │
+└──────────────────────────────────────────────────────────────┘
+
+Use Case 1: Degraded Manuscript
+  • Enable restoration: ✅
+  • OCR uses: Original (may have better contrast)
+  • You get: OCR results + cleaned image for archiving
+
+Use Case 2: Clear Manuscript
+  • Enable restoration: ❌
+  • OCR uses: Original
+  • You get: OCR results only (faster)
+
+Use Case 3: Compare Quality
+  • Enable restoration: ✅
+  • Compare: Original vs Restored visually
+  • OCR: Always from original
+
+┌──────────────────────────────────────────────────────────────┐
+│  ✅ BENEFITS                                                 │
+└──────────────────────────────────────────────────────────────┘
+
+1. Consistent OCR: Always knows what it's processing
+2. Best of Both: OCR accuracy + visual enhancement
+3. User Choice: Enable restoration for viewing/archiving
+4. Performance: No impact on OCR speed
+5. Transparency: Clear about what's being processed
+
+┌──────────────────────────────────────────────────────────────┐
+│  🔧 TECHNICAL DETAILS                                        │
+└──────────────────────────────────────────────────────────────┘
+
+Code Change:
+  OLD: image_to_analyze = restored_image if enabled else original
+  NEW: image_to_analyze = original  # Always
+
+Restoration:
+  • Runs in background when enabled
+  • Saved in session state
+  • Available for display/download
+  • Does NOT affect OCR input
+
+OCR Input:
+  • Always: Original uploaded image
+  • Format: PNG (converted)
+  • Sent to: Gemini AI API
+
+┌──────────────────────────────────────────────────────────────┐
+│  📝 UI UPDATES                                               │
+└──────────────────────────────────────────────────────────────┘
+
+Sidebar:
+  • Checkbox tooltip: "Restore for visualization (OCR uses original)"
+  • Instructions: Clarify restoration is for display
+
+Success Message:
+  • With restoration: "OCR from original image, restoration for display"
+  • Without restoration: Standard success message
+
+┌──────────────────────────────────────────────────────────────┐
+│  🚀 HOW TO USE                                               │
+└──────────────────────────────────────────────────────────────┘
+
+1. Start app: ./run_enhanced_ocr.sh
+
+2. Upload image
+
+3. Enable restoration:
+   ✅ YES → Get enhanced image for viewing/download
+   ❌ NO  → Skip restoration (faster)
+
+4. Click "Analyze & Translate"
+   → OCR always processes original image
+
+5. Results:
+   • Text extraction from original
+   • Translations
+   • (Optional) Restored image download
+
+┌──────────────────────────────────────────────────────────────┐
+│  ⚠️ IMPORTANT NOTES                                          │
+└──────────────────────────────────────────────────────────────┘
+
+• OCR ALWAYS uses original image (not restored)
+• Restoration is ONLY for visualization and download
+• This ensures consistent OCR behavior
+• Gemini AI processes the exact image you uploaded
+• Restoration model enhances image for human viewing
+
+┌──────────────────────────────────────────────────────────────┐
+│  📚 FILES UPDATED                                            │
+└──────────────────────────────────────────────────────────────┘
+
+Modified:
+  ✓ ocr_gemini_streamlit.py
+    - OCR input: Always uses original image
+    - Help text: Updated to clarify behavior
+    - Instructions: Reflects new workflow
+    - Success message: Shows which image used
+
+Created:
+  ✓ OCR_BEHAVIOR_UPDATE.txt (this file)
+
+┌──────────────────────────────────────────────────────────────┐
+│  ✅ STATUS                                                   │
+└──────────────────────────────────────────────────────────────┘
+
+✓ Change implemented
+✓ UI updated
+✓ Help text clarified
+✓ Ready to use
+
+═══════════════════════════════════════════════════════════════
+Date: November 30, 2025
+Change: OCR now always uses original image
+Restoration: Background process for display only
+═══════════════════════════════════════════════════════════════
+

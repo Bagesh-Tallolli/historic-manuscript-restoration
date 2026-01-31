@@ -5,72 +5,55 @@
 ### 1. Single Python File
 **File:** `kaggle_training_notebook.py`
 - Contains EVERYTHING needed for training
-- Includes: Model, Dataset, Training Loop, Metrics
+- Includes: Model, Dataset, Training Loop, Metrics, **Dataset Downloaders**
+- ✅ **Pre-configured with your Roboflow dataset!**
 - No external files required!
 
-### 2. Your Dataset
-- Just **clean manuscript images** (JPG/PNG)
-- Model creates degraded versions automatically
-- Minimum: 100 images | Recommended: 500-1000+ images
+### 2. Your Dataset (Already Set Up!)
+- ✅ **Roboflow dataset pre-configured**
+- API Key: Already included
+- Workspace: `neeew`
+- Project: `yoyoyo-mptyx-ijqfp`
+- **Just run the notebook - no setup needed!**
 
 ### 3. Kaggle Setup
 - Enable GPU (Settings → Accelerator → GPU)
-- Install 2 packages: `einops` and `lpips`
+- Enable Internet (Settings → Internet → ON)
+- Install packages: `einops`, `lpips`, `roboflow`
 
 ---
 
-## 📝 Step-by-Step Instructions
+## 📝 Step-by-Step Instructions (SIMPLIFIED!)
 
-### STEP 1: Prepare Your Dataset on Kaggle
-```
-1. Collect clean manuscript images
-2. Create a Kaggle Dataset:
-   - Go to kaggle.com/datasets
-   - Click "New Dataset"
-   - Upload your images in a folder called "train"
-   - Publish dataset
-```
-
-### STEP 2: Create Kaggle Notebook
+### STEP 1: Create Kaggle Notebook
 ```
 1. Go to kaggle.com
 2. Click "Create" → "New Notebook"
 3. Settings → Accelerator → GPU T4
-4. Settings → Internet → ON (for pip install)
+4. Settings → Internet → ON (IMPORTANT!)
 ```
 
-### STEP 3: Install Dependencies
+### STEP 2: Install Dependencies
 ```python
 # Cell 1: Install packages
-!pip install einops lpips -q
+!pip install einops lpips roboflow gdown kaggle -q
 ```
 
-### STEP 4: Add Dataset to Notebook
-```
-1. Click "Add Data" (right side)
-2. Search for your dataset
-3. Click "Add" to attach it
-```
-
-### STEP 5: Copy Training Code
+### STEP 3: Copy Training Code
 ```python
 # Cell 2: Copy ENTIRE content from kaggle_training_notebook.py
-# (You can copy from your local file or GitHub)
+# Get it from: https://github.com/Bagesh-Tallolli/historic-manuscript-restoration
 ```
 
-### STEP 6: Update Configuration
-```python
-# In the main() function, change these lines:
-TRAIN_DIR = '/kaggle/input/YOUR-DATASET-NAME/train'  # ← Update this
-VAL_DIR = None  # Or point to validation folder
-```
-
-### STEP 7: Run Training
+### STEP 4: Run Training (That's It!)
 ```python
 # Cell 3: Run the training
 if __name__ == "__main__":
     main()
 ```
+
+**✨ NO CONFIGURATION NEEDED!** The notebook is already set up with your Roboflow dataset.
+The dataset will download automatically when you run it!
 
 ---
 

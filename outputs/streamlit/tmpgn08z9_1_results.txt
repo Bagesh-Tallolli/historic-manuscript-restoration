@@ -1,0 +1,16 @@
+SANSKRIT MANUSCRIPT PROCESSING RESULTS
+============================================================
+
+Raw OCR:
+||| || |
+
+Cleaned Devanagari:
+॥। ॥ ।
+
+Romanized (IAST):
+||| || |
+
+English Translation:
+॥। ॥ ।
+
+Word Count: 3

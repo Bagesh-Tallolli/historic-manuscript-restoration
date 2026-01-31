@@ -1,0 +1,198 @@
+# 🚀 QUICK START GUIDE - Multi-Page Streamlit App
+
+## ✅ APPLICATION STATUS: RUNNING
+
+**URL**: http://localhost:8501
+**Port**: 8501
+**Status**: ✅ Active
+
+---
+
+## 📁 NEW STRUCTURE
+
+```
+Home.py                    # Main entry point
+├── pages/
+│   ├── 1_📤_Upload.py     # Step 1: Upload
+│   ├── 2_🔧_Restoration.py # Step 2: Restore
+│   ├── 3_📖_OCR.py        # Step 3: Extract
+│   ├── 4_🌐_Translation.py # Step 4: Translate
+│   └── 5_📚_History.py    # View history
+└── utils/
+    ├── backend.py          # Processing logic
+    └── ui_components.py    # Styling
+```
+
+---
+
+## 🎯 QUICK COMMANDS
+
+### Start
+```bash
+cd /home/bagesh/EL-project
+source venv/bin/activate
+streamlit run Home.py
+```
+
+### Stop
+```bash
+pkill -f "streamlit run"
+```
+
+### Check Status
+```bash
+ps aux | grep streamlit
+netstat -tlnp | grep 8501
+```
+
+---
+
+## 📖 USER WORKFLOW
+
+1. **Home** → Click "Start with Upload"
+2. **Upload** → Choose image → "Proceed to Restoration"
+3. **Restoration** → "Restore Image" → "Proceed to OCR"
+4. **OCR** → "Extract Text" → "Proceed to Translation"
+5. **Translation** → "Translate" → View results
+6. **History** → View/save sessions
+
+---
+
+## 🎨 FEATURES
+
+### ✅ New
+- Multi-page navigation
+- Sidebar menu
+- Step indicators (1/4, 2/4, etc.)
+- Progress tracking
+- History page
+- Info boxes
+- Better spacing
+
+### ✅ Unchanged (Backend)
+- Image enhancement (CLAHE)
+- OCR extraction (Gemini AI)
+- Translation (3 languages)
+- All processing logic
+
+---
+
+## 🌟 KEY IMPROVEMENTS
+
+| Feature | Before | After |
+|---------|--------|-------|
+| Layout | Single page | 6 pages |
+| Navigation | Scroll | Sidebar menu |
+| Clarity | Cluttered | Clean sections |
+| Guidance | Minimal | Step-by-step |
+| History | None | Dedicated page |
+
+---
+
+## 📊 PAGES OVERVIEW
+
+**Home**
+- Project overview
+- How it works
+- Features
+- CTA button
+
+**Upload** (Step 1/4)
+- File uploader
+- Preview
+- Metadata
+
+**Restoration** (Step 2/4)
+- Restore button
+- Before/after comparison
+
+**OCR** (Step 3/4)
+- Extract button
+- Text display
+- Copy option
+
+**Translation** (Step 4/4)
+- Translate button
+- Tabbed results
+- Download option
+
+**History**
+- Session status
+- Saved sessions
+- Statistics
+
+---
+
+## 🎓 DEMO TIPS
+
+**5-Minute Flow:**
+1. Home (explain) - 30s
+2. Upload (show) - 30s
+3. Restore (demo) - 1min
+4. OCR (extract) - 1.5min
+5. Translation (show 3 langs) - 1.5min
+6. History (track) - 30s
+
+---
+
+## 🔧 CUSTOMIZATION
+
+### Change Colors
+Edit `utils/ui_components.py`
+
+### Add Page
+Create `pages/6_NewName.py`
+
+### Modify Layout
+Use `st.columns()`, `st.tabs()`, `st.expander()`
+
+---
+
+## ⚠️ IMPORTANT
+
+### DON'T MODIFY
+- `utils/backend.py` - All processing logic
+- Any function with "enhance", "ocr", "translation"
+
+### CAN MODIFY
+- All page files in `pages/`
+- `utils/ui_components.py` - Styling only
+- `Home.py` - Landing page
+
+---
+
+## 📞 TROUBLESHOOTING
+
+**Can't access?**
+→ Check http://localhost:8501
+
+**Page errors?**
+→ Check all imports: `sys.path.append()`
+
+**Styling issues?**
+→ Verify `apply_custom_theme()` called
+
+**Navigation broken?**
+→ Check file naming (emojis + underscores)
+
+---
+
+## ✅ SUCCESS CHECKLIST
+
+- [x] Multi-page structure created
+- [x] 6 pages implemented
+- [x] Sidebar navigation
+- [x] Step indicators
+- [x] Backend unchanged
+- [x] Professional styling
+- [x] Application running
+- [x] Documentation complete
+
+---
+
+**🎉 YOUR STREAMLIT APP IS READY!**
+
+**Open: http://localhost:8501**
+
+*Frontend redesigned. Backend unchanged. Professional quality.*
+

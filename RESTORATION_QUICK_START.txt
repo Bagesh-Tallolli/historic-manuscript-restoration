@@ -1,0 +1,175 @@
+╔══════════════════════════════════════════════════════════════╗
+║     RESTORATION FEATURE - QUICK START GUIDE                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ ISSUE FIXED: Blank images → Now showing properly!
+
+┌──────────────────────────────────────────────────────────────┐
+│  🚀 START THE APP                                            │
+└──────────────────────────────────────────────────────────────┘
+
+cd /home/bagesh/EL-project
+./run_enhanced_ocr.sh
+
+→ Opens at http://localhost:8501
+
+┌──────────────────────────────────────────────────────────────┐
+│  📸 USE RESTORATION                                          │
+└──────────────────────────────────────────────────────────────┘
+
+1. UPLOAD IMAGE
+   • Click "Choose a manuscript image..."
+   • Select your Sanskrit manuscript
+   • Image appears in LEFT column
+
+2. ENABLE RESTORATION
+   • Check ✅ "Enable Image Restoration" (sidebar)
+   • Wait 2-10 seconds (depends on image size)
+   • Restored image appears in RIGHT column
+
+3. COMPARE
+   • Left: Original image
+   • Right: AI-restored image
+   • Visual side-by-side comparison
+
+4. DOWNLOAD
+   • Click "📥 Download Restored Image"
+   • Saves as PNG file
+   • Full resolution preserved
+
+5. OCR (Optional)
+   • Click "Analyze & Translate"
+   • Uses ORIGINAL image for OCR
+   • Restoration is for viewing only
+
+┌──────────────────────────────────────────────────────────────┐
+│  ⚡ QUICK TEST                                               │
+└──────────────────────────────────────────────────────────────┘
+
+Test restoration outside the app:
+
+venv/bin/python debug_restoration.py <image_path>
+
+Example:
+venv/bin/python debug_restoration.py data/datasets/samples/test_sample.png
+
+→ Creates: debug_original.png, debug_restored.png
+
+┌──────────────────────────────────────────────────────────────┐
+│  ✅ WHAT'S FIXED                                             │
+└──────────────────────────────────────────────────────────────┘
+
+BEFORE:
+  ❌ Blank/black restored images
+  ❌ Output values too dark (0-17)
+  ❌ Unusable restoration
+
+AFTER:
+  ✅ Visible restored images
+  ✅ Full range values (0-255)
+  ✅ Working restoration feature
+
+┌──────────────────────────────────────────────────────────────┐
+│  ⚙️ SETTINGS                                                 │
+└──────────────────────────────────────────────────────────────┘
+
+Restoration Settings (automatic):
+  • Device: Auto-detect (CUDA or CPU)
+  • Model: ViT Base (330MB)
+  • Patch size: 256x256
+  • Overlap: 32 pixels
+  • Post-processing: Enabled
+
+Processing Time:
+  • Small images (<512px): 1-3 seconds
+  • Medium (512-1024px): 3-7 seconds
+  • Large (>1024px): 5-15 seconds
+
+┌──────────────────────────────────────────────────────────────┐
+│  🎯 BEST PRACTICES                                           │
+└──────────────────────────────────────────────────────────────┘
+
+ENABLE restoration for:
+  ✅ Faded manuscripts
+  ✅ Damaged/torn pages
+  ✅ Low contrast images
+  ✅ Noisy scans
+  ✅ Historical documents
+
+DISABLE restoration for:
+  ❌ Clear, modern scans
+  ❌ High-quality photos
+  ❌ Already enhanced images
+  ❌ When speed is priority
+
+┌──────────────────────────────────────────────────────────────┐
+│  📊 OUTPUTS                                                  │
+└──────────────────────────────────────────────────────────────┘
+
+You get:
+  1. Original image display (left column)
+  2. Restored image display (right column)
+  3. Download button for restored PNG
+  4. OCR results from ORIGINAL image
+
+The restoration is for VISUALIZATION and ARCHIVING only.
+OCR always uses the original uploaded image.
+
+┌──────────────────────────────────────────────────────────────┐
+│  🐛 TROUBLESHOOTING                                          │
+└──────────────────────────────────────────────────────────────┘
+
+Issue: Still seeing blank images
+Fix:   1. Clear browser cache
+       2. Refresh page (F5)
+       3. Re-upload image
+       4. Check debug_restored.png
+
+Issue: Slow restoration
+Fix:   1. Normal for large images
+       2. Use GPU if available
+       3. Try smaller image size
+
+Issue: Model not loading
+Fix:   1. Check checkpoints/kaggle/final_converted.pth exists
+       2. Run: venv/bin/python test_model_loading.py
+       3. Review error messages
+
+┌──────────────────────────────────────────────────────────────┐
+│  📁 DEBUG FILES                                              │
+└──────────────────────────────────────────────────────────────┘
+
+Available debug scripts:
+  • debug_restoration.py - Full restoration test
+  • debug_model_output.py - Model output analysis
+  • test_model_loading.py - Model loading verification
+
+Debug outputs:
+  • debug_original.png - Input image
+  • debug_restored.png - Output image
+  • debug_patch_*.png - Patch-level analysis
+
+┌──────────────────────────────────────────────────────────────┐
+│  ✅ VERIFICATION CHECKLIST                                   │
+└──────────────────────────────────────────────────────────────┘
+
+Before using:
+  □ Checkpoint exists (330MB)
+  □ Model loads without errors
+  □ Debug test passes
+  □ Output range is 0-255
+
+During use:
+  □ Restoration checkbox visible
+  □ Processing spinner appears
+  □ Restored image appears in right column
+  □ Image is visible (not blank)
+  □ Download button works
+
+═══════════════════════════════════════════════════════════════
+✅ RESTORATION FEATURE READY TO USE
+═══════════════════════════════════════════════════════════════
+
+Start now: ./run_enhanced_ocr.sh
+═══════════════════════════════════════════════════════════════
+

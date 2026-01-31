@@ -1,0 +1,8 @@
+# Requirements for ManuscriptVision-Agent
+numpy>=1.24.0
+pillow>=10.0.0
+google-genai>=0.2.0
+streamlit>=1.28.0
+
+# API-based complete pipeline for Sanskrit manuscript processing
+

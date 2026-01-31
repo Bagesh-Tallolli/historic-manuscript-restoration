@@ -130,12 +130,14 @@ class ViTRestorer(nn.Module):
         num_heads=12,
         mlp_ratio=4.0,
         dropout=0.1,
-        use_skip_connections=True
+        use_skip_connections=True,
+        use_simple_head=False  # For backward compatibility with old checkpoints
     ):
         super().__init__()
         self.img_size = img_size
         self.patch_size = patch_size
         self.use_skip_connections = use_skip_connections
+        self.use_simple_head = use_simple_head
 
         # Patch embedding
         self.patch_embed = PatchEmbedding(img_size, patch_size, in_channels, embed_dim)
@@ -154,8 +156,13 @@ class ViTRestorer(nn.Module):
         # Normalization
         self.norm = nn.LayerNorm(embed_dim)
 
-        # Patch reconstruction
-        self.patch_recon = PatchReconstruction(img_size, patch_size, embed_dim, out_channels)
+        # Decoder: support both old and new formats
+        if use_simple_head:
+            # Old format: simple linear head (for Kaggle checkpoints)
+            self.head = nn.Linear(embed_dim, patch_size * patch_size * out_channels)
+        else:
+            # New format: patch reconstruction with rearrange
+            self.patch_recon = PatchReconstruction(img_size, patch_size, embed_dim, out_channels)
 
         # Skip connection fusion
         if use_skip_connections:
@@ -202,8 +209,17 @@ class ViTRestorer(nn.Module):
         # Normalize
         x = self.norm(x)
 
-        # Reconstruct image
-        x = self.patch_recon(x)
+        # Reconstruct image (support both old and new decoders)
+        if self.use_simple_head:
+            # Old format: simple linear head
+            x = self.head(x)
+            # Reshape patches back to image
+            h = w = self.img_size // self.patch_size
+            x = x.reshape(x.shape[0], h, w, self.patch_size, self.patch_size, 3)
+            x = x.permute(0, 5, 1, 3, 2, 4).reshape(x.shape[0], 3, self.img_size, self.img_size)
+        else:
+            # New format: patch reconstruction
+            x = self.patch_recon(x)
 
         # Skip connection
         if self.use_skip_connections:

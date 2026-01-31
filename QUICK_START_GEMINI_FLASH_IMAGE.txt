@@ -1,0 +1,44 @@
+═══════════════════════════════════════════════════════════════════════
+              ✅ SANSKRIT MANUSCRIPT RESTORATION
+                 gemini-2.5-flash-image Model
+═══════════════════════════════════════════════════════════════════════
+🌐 ACCESS: http://localhost:8502
+📊 STATUS: ✅ RUNNING (PID: 28026, Port: 8502)
+🎨 MODEL: gemini-2.5-flash-image (IMAGE GENERATION MODEL)
+═══════════════════════════════════════════════════════════════════════
+🚀 QUICK START (5 STEPS):
+1. Open: http://localhost:8502
+2. Model: gemini-2.5-flash-image ✅ (default)
+3. Enhancement: "Enhance Document/Manuscript"
+4. Upload: Your Sanskrit manuscript image
+5. Click: "✨ Restore Manuscript with Gemini Flash Image"
+═══════════════════════════════════════════════════════════════════════
+✨ WHAT IT DOES:
+• Sharpens Devanagari script
+• Cleans background (removes stains, noise)
+• Preserves red cinnabar markings
+• Maintains authentic parchment texture
+• Returns actual restored IMAGE (not text!)
+═══════════════════════════════════════════════════════════════════════
+🎯 WHY THIS MODEL WORKS:
+gemini-2.5-flash-image:
+  Input:  ✅ Image
+  Output: ✅ Image (GENERATES NEW IMAGES!)
+Other Gemini models:
+  Input:  ✅ Image
+  Output: ❌ Text only (descriptions, not images)
+═══════════════════════════════════════════════════════════════════════
+📱 ALL APPS:
+PORT 8501: OCR Gemini (ViT + OCR + Translation)
+PORT 8502: Gemini Flash Image ⭐ THIS ONE (Image Restoration)
+PORT 8503: ViT Restoration (Local, Guaranteed)
+═══════════════════════════════════════════════════════════════════════
+💡 TIPS:
+✅ Use "Enhance Document/Manuscript" option
+✅ Upload high-resolution images
+✅ Wait 10-30 seconds for processing
+✅ Compare with ViT app (port 8503) results
+═══════════════════════════════════════════════════════════════════════
+🎉 NOW WORKING - TEST IT OUT!
+Open: http://localhost:8502
+═══════════════════════════════════════════════════════════════════════

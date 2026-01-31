@@ -1,0 +1,15 @@
+# Google Cloud Vision API (for Google Lens OCR)
+google-cloud-vision>=3.4.0
+
+# Gemini API (for Sanskrit text correction)
+google-generativeai>=0.3.0
+
+# Already in requirements.txt but confirming:
+# torch>=2.0.0
+# torchvision>=0.15.0
+# transformers>=4.30.0
+# streamlit>=1.28.0
+# opencv-python>=4.8.0
+# pillow>=10.0.0
+# numpy>=1.24.0
+

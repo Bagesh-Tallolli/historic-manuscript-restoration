@@ -16,6 +16,8 @@ except ImportError:
     print("Warning: transformers not installed. TrOCR will not be available.")
 
 from ocr.preprocess import OCRPreprocessor, resize_with_aspect_ratio
+from ocr.google_lens_ocr import GoogleLensOCR
+import os
 
 
 class SanskritOCR:
@@ -24,16 +26,19 @@ class SanskritOCR:
     def __init__(self, engine='tesseract', preprocessor=None):
         """
         Args:
-            engine: 'tesseract' or 'trocr'
+            engine: 'tesseract', 'trocr', or 'google'
             preprocessor: OCRPreprocessor instance (creates new if None)
         """
         self.engine = engine
         self.preprocessor = preprocessor or OCRPreprocessor()
+        self.google_lens = None
 
         if engine == 'trocr':
             self._init_trocr()
         elif engine == 'tesseract':
             self._check_tesseract()
+        elif engine == 'google':
+            self._init_google_lens()
 
     def _check_tesseract(self):
         """Check if Tesseract is installed and has Devanagari support"""
@@ -49,6 +54,24 @@ class SanskritOCR:
                 print("Install with: sudo apt-get install tesseract-ocr-san")
         except Exception as e:
             print(f"Warning: Tesseract not properly configured: {e}")
+
+    def _init_google_lens(self):
+        """Initialize Google Cloud Vision OCR"""
+        try:
+            # Get API key from environment
+            api_key = os.getenv('GOOGLE_CLOUD_API_KEY')
+            if not api_key:
+                raise ValueError("GOOGLE_CLOUD_API_KEY not found in environment")
+
+            self.google_lens = GoogleLensOCR(api_key)
+            print("✓ Google Cloud Vision API initialized")
+
+            # Test if API is available
+            if not self.google_lens.is_available():
+                print("Warning: Google Cloud Vision API key may be invalid or service unavailable")
+        except Exception as e:
+            print(f"Warning: Google Cloud Vision initialization failed: {e}")
+            self.google_lens = None
 
     def _init_trocr(self):
         """Initialize TrOCR model"""
@@ -93,6 +116,8 @@ class SanskritOCR:
             text = self._tesseract_ocr(image, lang)
         elif self.engine == 'trocr':
             text = self._trocr_ocr(image)
+        elif self.engine == 'google':
+            text = self._google_lens_ocr(image, lang)
         else:
             raise ValueError(f"Unknown OCR engine: {self.engine}")
 
@@ -135,6 +160,18 @@ class SanskritOCR:
         )[0]
 
         return generated_text.strip()
+
+    def _google_lens_ocr(self, image, lang='san'):
+        """Run Google Lens (Cloud Vision API) OCR"""
+        if not self.google_lens:
+            raise RuntimeError("Google Cloud Vision not initialized. Please check your API key.")
+
+        try:
+            text = self.google_lens.extract_text(image, preprocess=False, lang=lang)
+            return text
+        except Exception as e:
+            print(f"Google Lens OCR error: {e}")
+            raise RuntimeError(f"Google Cloud Vision API failed: {str(e)}. Please verify your API key is valid.")
 
     def extract_text_with_layout(self, image, preprocess=True, lang='san'):
         """
@@ -302,4 +339,3 @@ if __name__ == "__main__":
         print(f"Tesseract error: {e}")
 
     print("\nOCR module ready!")
-

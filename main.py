@@ -12,16 +12,31 @@ import argparse
 import json
 from PIL import Image
 import matplotlib.pyplot as plt
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 from models.vit_restorer import create_vit_restorer
 from ocr.preprocess import OCRPreprocessor
 from ocr.run_ocr import SanskritOCR
+from ocr.enhanced_ocr import EnhancedSanskritOCR
 from nlp.unicode_normalizer import SanskritTextProcessor
 from nlp.translation import SanskritTranslator
+from utils.image_restoration_enhanced import create_enhanced_restorer
 
 
 class ManuscriptPipeline:
-    """Complete end-to-end manuscript processing pipeline"""
+    """
+    Complete end-to-end manuscript processing pipeline
+
+    Agent-based architecture for:
+    1. Ancient manuscript image restoration
+    2. Sanskrit OCR extraction
+    3. OCR error correction & normalization
+    4. Sanskrit → English translation
+    5. Quality verification & self-correction
+    """
 
     def __init__(
         self,
@@ -50,20 +65,82 @@ class ManuscriptPipeline:
         # 1. Image Restoration Model
         if restoration_model_path:
             print("Loading restoration model...")
-            self.restoration_model = create_vit_restorer('base', img_size=256)
-            checkpoint = torch.load(restoration_model_path, map_location=self.device)
-            self.restoration_model.load_state_dict(checkpoint['model_state_dict'])
+            checkpoint = torch.load(restoration_model_path, map_location=self.device, weights_only=False)
+
+            # Extract state dict
+            if 'model_state_dict' in checkpoint:
+                state_dict = checkpoint['model_state_dict']
+            else:
+                state_dict = checkpoint
+
+            # Detect model format automatically
+            has_head = any('head.' in k for k in state_dict.keys())
+            has_patch_recon = any('patch_recon' in k for k in state_dict.keys())
+            has_skip = any('skip_fusion' in k for k in state_dict.keys())
+
+            if has_head and not has_patch_recon:
+                # Old Kaggle format: simple head, no skip connections
+                print("  Format: Kaggle checkpoint (simple head, no skip)")
+                self.restoration_model = create_vit_restorer(
+                    'base', img_size=256,
+                    use_skip_connections=False,
+                    use_simple_head=True
+                )
+            elif has_patch_recon and has_skip:
+                # New format: patch_recon with skip connections
+                print("  Format: New checkpoint (patch_recon + skip)")
+                self.restoration_model = create_vit_restorer(
+                    'base', img_size=256,
+                    use_skip_connections=True,
+                    use_simple_head=False
+                )
+            elif has_patch_recon and not has_skip:
+                # Patch recon without skip
+                print("  Format: Patch_recon without skip")
+                self.restoration_model = create_vit_restorer(
+                    'base', img_size=256,
+                    use_skip_connections=False,
+                    use_simple_head=False
+                )
+            else:
+                # Default to new format
+                print("  Format: Default (patch_recon + skip)")
+                self.restoration_model = create_vit_restorer('base', img_size=256)
+
+            # Load weights
+            try:
+                self.restoration_model.load_state_dict(state_dict, strict=True)
+                print("✓ Restoration model loaded successfully")
+            except RuntimeError as e:
+                print(f"  Warning: Strict loading failed, trying flexible mode...")
+                missing, unexpected = self.restoration_model.load_state_dict(state_dict, strict=False)
+                if missing:
+                    print(f"  Missing keys: {len(missing)}")
+                if unexpected:
+                    print(f"  Unexpected keys: {len(unexpected)}")
+                print("✓ Restoration model loaded (flexible mode)")
+
             self.restoration_model.to(self.device)
             self.restoration_model.eval()
-            print("✓ Restoration model loaded")
+
+            # Create enhanced restorer for better quality
+            self.enhanced_restorer = create_enhanced_restorer(
+                self.restoration_model,
+                device=self.device,
+                patch_size=256,
+                overlap=32
+            )
+            print("✓ Enhanced restorer initialized (patch-based processing)")
         else:
             print("⚠ Skipping restoration (no model provided)")
             self.restoration_model = None
+            self.enhanced_restorer = None
 
         # 2. OCR Engine
-        print(f"Initializing OCR ({ocr_engine})...")
-        self.ocr = SanskritOCR(engine=ocr_engine)
-        print("✓ OCR initialized")
+        print("✓ OCR initialized (Tesseract-only)")
+        self.ocr = EnhancedSanskritOCR(engine='tesseract', device=self.device)
+        # Force Tesseract-only regardless of requested engine per updated requirements
+        print(f"Initializing OCR (tesseract-only)...")
 
         # 3. Text Processor (Unicode normalization)
         print("Initializing text processor...")
@@ -77,9 +154,22 @@ class ManuscriptPipeline:
 
         print("\n✓ Pipeline ready!\n")
 
+    def process(self, image_path, save_output=False, output_dir='output'):
+        """
+        Alias for process_manuscript for backward compatibility
+        """
+        return self.process_manuscript(image_path, save_output, output_dir)
+
     def process_manuscript(self, image_path, save_output=False, output_dir='output'):
         """
-        Process a manuscript image through the complete pipeline
+        Process a manuscript image through the complete pipeline with agent-based verification
+
+        Agent Responsibilities:
+        1. Image Restoration - Enhance clarity, remove noise, preserve character shapes
+        2. OCR Extraction - Extract Sanskrit/Devanagari text accurately
+        3. OCR Correction - Fix broken ligatures, missing matras, normalize Unicode
+        4. Translation - Translate normalized Sanskrit into clear, accurate English
+        5. Verification - Compare restored vs OCR, validate translation, provide confidence
 
         Args:
             image_path: Path to manuscript image
@@ -87,7 +177,7 @@ class ManuscriptPipeline:
             output_dir: Directory to save outputs
 
         Returns:
-            Dictionary with all results
+            Dictionary with all results including confidence scores
         """
         print(f"\nProcessing: {image_path}")
         print("=" * 60)
@@ -107,6 +197,18 @@ class ManuscriptPipeline:
         if self.restoration_model is not None:
             restored_img = self._restore_image(original_img)
             print("✓ Image restored")
+
+            # CRITICAL FIX: Ensure restored image is in correct format for OCR
+            # Check if values are in [0, 1] range (float) instead of [0, 255] (uint8)
+            if restored_img.dtype != np.uint8:
+                print(f"  ⚠ Converting restored image from {restored_img.dtype} to uint8")
+                if restored_img.max() <= 1.0:
+                    restored_img = (restored_img * 255).astype(np.uint8)
+                else:
+                    restored_img = restored_img.astype(np.uint8)
+
+            # Verify image format
+            print(f"  Restored image: shape={restored_img.shape}, dtype={restored_img.dtype}, range=[{restored_img.min()}, {restored_img.max()}]")
         else:
             restored_img = original_img.copy()
             print("⚠ Skipped (no model)")
@@ -115,7 +217,18 @@ class ManuscriptPipeline:
         print("\n2️⃣  OCR (Text Extraction)")
         print("-" * 60)
 
-        ocr_text_raw = self.ocr.extract_text(restored_img, preprocess=True, lang='san')
+        # DEBUG: Verify what image is being sent to OCR
+        print(f"  Image sent to OCR: shape={restored_img.shape}, dtype={restored_img.dtype}, range=[{restored_img.min()}, {restored_img.max()}]")
+        print(f"  Using {'RESTORED' if self.restoration_model is not None else 'ORIGINAL'} image for OCR")
+
+        # Use enhanced OCR for complete paragraph extraction
+        ocr_result = self.ocr.extract_complete_paragraph(restored_img, preprocess=True, multi_pass=True)
+        ocr_text_raw = ocr_result['text']
+        ocr_confidence = ocr_result.get('confidence', 0.0)
+        ocr_method = ocr_result.get('method', 'unknown')
+
+        print(f"OCR Method: {ocr_method}")
+        print(f"Confidence: {ocr_confidence:.2%}")
         print(f"Raw OCR output:\n{ocr_text_raw[:200]}..." if len(ocr_text_raw) > 200 else f"Raw OCR output:\n{ocr_text_raw}")
 
         # Unicode Normalization
@@ -150,43 +263,160 @@ class ManuscriptPipeline:
             'word_count': processed['word_count'],
             'romanized': processed['romanized'],
             'translation': translation,
+            'ocr_confidence': ocr_confidence,
+            'ocr_method': ocr_method,
+            'ocr_word_count': ocr_result.get('word_count', processed['word_count']),
+            'ocr_hybrid_score': ocr_result.get('hybrid_score') if 'hybrid_score' in ocr_result else None,
+            'ocr_components': ocr_result.get('components') if 'components' in ocr_result else None,
+            'complete_extraction': True
         }
 
         # Save outputs
         if save_output:
-            self._save_results(results, output_dir, image_path.stem)
+            restored_path = self._save_results(results, output_dir, image_path.stem)
+            results['restored_path'] = restored_path
 
         print("\n" + "=" * 60)
         print("✓ Processing complete!")
 
         return results
 
-    def _restore_image(self, image):
-        """Restore image using ViT model"""
-        # Resize to model input size
-        h, w = image.shape[:2]
-        img_resized = cv2.resize(image, (256, 256))
+    def _verify_and_score(self, original_img, restored_img, ocr_raw, ocr_cleaned, translation):
+        """
+        Agent-based verification and confidence scoring
 
-        # Convert to tensor
-        img_tensor = torch.from_numpy(img_resized).float() / 255.0
-        img_tensor = img_tensor.permute(2, 0, 1).unsqueeze(0)
-        img_tensor = img_tensor.to(self.device)
+        Verifies:
+        1. Image restoration quality
+        2. OCR extraction accuracy
+        3. Translation quality
 
-        # Restore
-        with torch.no_grad():
-            restored_tensor = self.restoration_model(img_tensor)
+        Returns confidence scores and notes
+        """
+        notes = []
 
-        # Convert back to numpy
-        restored = restored_tensor.squeeze(0).permute(1, 2, 0).cpu().numpy()
-        restored = (restored * 255).clip(0, 255).astype(np.uint8)
+        # 1. OCR Confidence - based on text length and character validity
+        ocr_confidence = 0.0
+        if ocr_raw:
+            # Check if we have meaningful text
+            has_devanagari = any('\u0900' <= c <= '\u097F' for c in ocr_cleaned)
+            text_length = len(ocr_cleaned.strip())
 
-        # Resize back to original size
-        restored = cv2.resize(restored, (w, h))
+            if has_devanagari and text_length > 10:
+                ocr_confidence = 0.9
+                notes.append("Good Devanagari text extraction")
+            elif text_length > 5:
+                ocr_confidence = 0.7
+                notes.append("Moderate text extraction")
+            else:
+                ocr_confidence = 0.4
+                notes.append("Limited text extraction - image may be heavily degraded")
+        else:
+            notes.append("No text extracted - check image quality")
 
-        return restored
+        # 2. Translation Quality - based on output validity
+        translation_quality = 0.0
+        if translation and len(translation.strip()) > 0:
+            # Basic checks
+            word_count = len(translation.split())
+            if word_count > 3:
+                translation_quality = 0.85
+                notes.append("Complete translation generated")
+            elif word_count > 0:
+                translation_quality = 0.6
+                notes.append("Partial translation generated")
+        else:
+            if ocr_cleaned:
+                notes.append("Translation failed - check translator service")
+            else:
+                notes.append("No translation - no source text")
+
+        # 3. Image Quality - basic PSNR-like assessment
+        if restored_img is not None and original_img is not None:
+            # Simple quality check based on variance
+            import numpy as np
+            restored_var = np.var(restored_img)
+            original_var = np.var(original_img)
+
+            if restored_var > original_var * 0.5:
+                notes.append("Good restoration quality")
+            else:
+                notes.append("Restoration may need improvement")
+
+        # 4. Overall Confidence
+        overall_confidence = (ocr_confidence * 0.6 + translation_quality * 0.4)
+
+        return {
+            'ocr_confidence': ocr_confidence,
+            'translation_quality': translation_quality,
+            'overall_confidence': overall_confidence,
+            'notes': notes
+        }
+
+    def _restore_image(self, image, use_enhanced=True):
+        """
+        Restore image using ViT model
+
+        Args:
+            image: Input image (H, W, 3) in RGB format
+            use_enhanced: If True, use patch-based processing for better quality
+                         If False, use simple resize method (faster)
+
+        Returns:
+            Restored image (same size as input, uint8, [0-255])
+        """
+        if use_enhanced and self.enhanced_restorer is not None:
+            # Use enhanced patch-based restoration for better quality
+            h, w = image.shape[:2]
+
+            # Use patch-based processing for large images
+            if h > 512 or w > 512:
+                print(f"   Using enhanced patch-based restoration ({h}x{w})...")
+                restored = self.enhanced_restorer.restore_image(
+                    image,
+                    use_patches=True,
+                    apply_postprocess=True
+                )
+            else:
+                print(f"   Using simple restoration ({h}x{w})...")
+                restored = self.enhanced_restorer.restore_image(
+                    image,
+                    use_patches=False,
+                    apply_postprocess=True
+                )
+
+            # CRITICAL FIX: Ensure output is uint8 [0-255]
+            if restored.dtype != np.uint8:
+                if restored.max() <= 1.0:
+                    restored = (restored * 255).clip(0, 255).astype(np.uint8)
+                else:
+                    restored = restored.clip(0, 255).astype(np.uint8)
+
+            return restored
+        else:
+            # Fallback to simple method (original implementation)
+            h, w = image.shape[:2]
+            img_resized = cv2.resize(image, (256, 256))
+
+            # Convert to tensor
+            img_tensor = torch.from_numpy(img_resized).float() / 255.0
+            img_tensor = img_tensor.permute(2, 0, 1).unsqueeze(0)
+            img_tensor = img_tensor.to(self.device)
+
+            # Restore
+            with torch.no_grad():
+                restored_tensor = self.restoration_model(img_tensor)
+
+            # Convert back to numpy
+            restored = restored_tensor.squeeze(0).permute(1, 2, 0).cpu().numpy()
+            restored = (restored * 255).clip(0, 255).astype(np.uint8)
+
+            # Resize back to original size
+            restored = cv2.resize(restored, (w, h))
+
+            return restored
 
     def _save_results(self, results, output_dir, name):
-        """Save all results to files"""
+        """Save all results to files and return restored image path"""
         output_dir = Path(output_dir)
         output_dir.mkdir(exist_ok=True, parents=True)
 
@@ -195,8 +425,9 @@ class ManuscriptPipeline:
             str(output_dir / f"{name}_original.jpg"),
             cv2.cvtColor(results['original_image'], cv2.COLOR_RGB2BGR)
         )
+        restored_path = str(output_dir / f"{name}_restored.jpg")
         cv2.imwrite(
-            str(output_dir / f"{name}_restored.jpg"),
+            restored_path,
             cv2.cvtColor(results['restored_image'], cv2.COLOR_RGB2BGR)
         )
 

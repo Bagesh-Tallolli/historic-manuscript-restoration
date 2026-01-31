@@ -5,6 +5,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Environment variables and API keys
+.env
+*.env
+credentials/
+*.json
+
 # Distribution / packaging
 .Python
 build/

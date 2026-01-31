@@ -24,9 +24,9 @@ Dataset Structure Expected:
 # ============================================================================
 
 # Run this in a Kaggle cell:
-"""
+
 !pip install einops lpips roboflow kaggle gdown -q
-"""
+
 
 # ============================================================================
 # SECTION 2: IMPORTS
@@ -799,13 +799,15 @@ def main():
     # Choose ONE of the following methods to get your dataset:
 
     # METHOD 1: Download from Roboflow (RECOMMENDED for manuscript datasets)
-    USE_ROBOFLOW = False
+    # ✅ PRECONFIGURED WITH YOUR ROBOFLOW DATASET
+    USE_ROBOFLOW = True  # ← Already set up and ready to use!
     ROBOFLOW_CONFIG = {
-        'api_key': 'YOUR_ROBOFLOW_API_KEY',  # Get from https://app.roboflow.com
-        'workspace': 'your-workspace',
-        'project': 'your-project',
-        'version': 1
+        'api_key': 'EBJvHlgSWLyW1Ir6ctkH',  # Your Roboflow API key
+        'workspace': 'neeew',                # Your workspace
+        'project': 'yoyoyo-mptyx-ijqfp',    # Your manuscript project
+        'version': 1                         # Dataset version
     }
+    # Project URL: https://app.roboflow.com/neeew/yoyoyo-mptyx-ijqfp
 
     # METHOD 2: Download from Kaggle Dataset
     USE_KAGGLE_DATASET = False
@@ -820,9 +822,9 @@ def main():
     GOOGLE_DRIVE_FILE_ID = 'your-file-id'  # From drive link
 
     # METHOD 5: Use pre-uploaded Kaggle input dataset
-    USE_KAGGLE_INPUT = True  # Set to True if you manually added dataset in Kaggle UI
-    TRAIN_DIR = '/kaggle/input/your-dataset/train'  # ← CHANGE THIS
-    VAL_DIR = None  # or '/kaggle/input/your-dataset/val'
+    USE_KAGGLE_INPUT = False  # Disabled (using Roboflow instead)
+    TRAIN_DIR = '/kaggle/input/your-dataset/train'
+    VAL_DIR = None
 
     # METHOD 6: Use sample dataset (for testing only)
     USE_SAMPLE_DATASET = False

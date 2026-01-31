@@ -1,0 +1,106 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║         🕉️  SANSKRIT MANUSCRIPT PIPELINE - QUICK REF         ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+🌐 WEB UI: http://localhost:8504  ✅ RUNNING
+
+───────────────────────────────────────────────────────────────
+
+📍 WHAT TO DO NOW:
+
+1. Open browser → http://localhost:8504
+2. Upload image → data/raw/test/test_0001.jpg
+3. Click → 🚀 PROCESS MANUSCRIPT
+4. Wait → ~10-15 seconds
+5. View → Results in table
+6. Download → All outputs
+
+───────────────────────────────────────────────────────────────
+
+⚡ PIPELINE FLOW:
+
+INPUT IMAGE
+   ↓ [1] ViT Restoration
+   ↓ [2] Google Cloud Vision OCR
+   ↓ [3] Gemini Text Correction
+   ↓ [4] Gemini Translation
+OUTPUT FILES (5 files)
+
+───────────────────────────────────────────────────────────────
+
+📂 OUTPUT FILES:
+
+outputs/
+├── restored_output.png          # Enhanced image
+├── ocr_raw.txt                  # Raw OCR text
+├── sanskrit_cleaned.txt         # Corrected Sanskrit
+├── english_translation.txt      # English translation
+└── pipeline_output.json         # Complete JSON
+
+───────────────────────────────────────────────────────────────
+
+🔧 ALTERNATIVE COMMANDS:
+
+Test Script:
+  python test_clean_pipeline.py
+
+CLI Processing:
+  python pipeline_clean.py \
+    --image data/raw/test/test_0001.jpg \
+    --model checkpoints/kaggle/final.pth \
+    --google-key "d48..." \
+    --gemini-key "AIza..." \
+    --output outputs/test
+
+Restart Server:
+  ./run_clean.sh
+
+───────────────────────────────────────────────────────────────
+
+🔑 API KEYS (configured in .env):
+
+Google Cloud Vision:
+  d48382987f9cddac6b042e3703797067fd46f2b0
+
+Gemini API:
+  AIzaSyBIORWk0PZThY5m3yCudftd3sssnZADi_A
+
+───────────────────────────────────────────────────────────────
+
+📊 WHAT YOU GET:
+
+✅ Side-by-side image comparison
+✅ Sanskrit text (corrected Devanagari)
+✅ English translation (complete paragraph)
+✅ Confidence scores
+✅ Downloadable outputs
+✅ JSON export
+
+───────────────────────────────────────────────────────────────
+
+📚 DOCUMENTATION:
+
+Quick Start:    START_HERE_CLEAN.txt
+Full Guide:     README_CLEAN_PIPELINE.md
+Status:         CLEAN_PIPELINE_STATUS.txt
+Summary:        FINAL_SUMMARY_CLEAN.txt
+This File:      QUICK_REF_CLEAN.txt
+
+───────────────────────────────────────────────────────────────
+
+✅ STATUS: READY
+
+Server:   ✅ Running (port 8504)
+Model:    ✅ Loaded (330 MB)
+APIs:     ✅ Configured
+Images:   ✅ 59 test files
+Docs:     ✅ Complete
+
+───────────────────────────────────────────────────────────────
+
+🚀 START NOW: http://localhost:8504
+
+───────────────────────────────────────────────────────────────
+

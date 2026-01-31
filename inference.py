@@ -12,7 +12,7 @@ from models.vit_restorer import create_vit_restorer
 from utils.metrics import ImageMetrics
 
 
-def restore_image(model, image_path, device='cuda', img_size=256):
+def restore_image(model, image_path, device='cuda', img_size=256, use_enhanced=True):
     """
     Restore a single image using trained model
 
@@ -21,33 +21,43 @@ def restore_image(model, image_path, device='cuda', img_size=256):
         image_path: Path to input image
         device: Device to use
         img_size: Input size for model
+        use_enhanced: Use enhanced patch-based restoration (better quality)
 
     Returns:
-        Restored image (numpy array)
+        Tuple of (original image, restored image) as numpy arrays
     """
     # Load image
     img = cv2.imread(str(image_path))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     original_h, original_w = img.shape[:2]
 
-    # Resize to model input size
-    img_resized = cv2.resize(img, (img_size, img_size))
+    if use_enhanced:
+        # Use enhanced restorer for better quality
+        enhanced_restorer = create_enhanced_restorer(model, device, patch_size=img_size, overlap=32)
 
-    # Convert to tensor
-    img_tensor = torch.from_numpy(img_resized).float() / 255.0
-    img_tensor = img_tensor.permute(2, 0, 1).unsqueeze(0).to(device)
+        # Choose method based on image size
+        use_patches = (original_h > 512 or original_w > 512)
+        restored = enhanced_restorer.restore_image(img, use_patches=use_patches, apply_postprocess=True)
+    else:
+        # Original simple method (faster but lower quality for large images)
+        # Resize to model input size
+        img_resized = cv2.resize(img, (img_size, img_size))
 
-    # Restore
-    model.eval()
-    with torch.no_grad():
-        restored_tensor = model(img_tensor)
+        # Convert to tensor
+        img_tensor = torch.from_numpy(img_resized).float() / 255.0
+        img_tensor = img_tensor.permute(2, 0, 1).unsqueeze(0).to(device)
 
-    # Convert back to numpy
-    restored = restored_tensor.squeeze(0).permute(1, 2, 0).cpu().numpy()
-    restored = (restored * 255).clip(0, 255).astype(np.uint8)
+        # Restore
+        model.eval()
+        with torch.no_grad():
+            restored_tensor = model(img_tensor)
 
-    # Resize back to original dimensions
-    restored = cv2.resize(restored, (original_w, original_h))
+        # Convert back to numpy
+        restored = restored_tensor.squeeze(0).permute(1, 2, 0).cpu().numpy()
+        restored = (restored * 255).clip(0, 255).astype(np.uint8)
+
+        # Resize back to original dimensions
+        restored = cv2.resize(restored, (original_w, original_h))
 
     return img, restored
 
@@ -88,8 +98,15 @@ def main():
     # Load model
     print(f"Loading model from {args.checkpoint}...")
     model = create_vit_restorer(args.model_size, img_size=args.img_size)
-    checkpoint = torch.load(args.checkpoint, map_location=device)
-    model.load_state_dict(checkpoint['model_state_dict'])
+    checkpoint = torch.load(args.checkpoint, map_location=device, weights_only=False)
+
+    # Handle both checkpoint formats (wrapped and unwrapped)
+    if 'model_state_dict' in checkpoint:
+        model.load_state_dict(checkpoint['model_state_dict'])
+    else:
+        # Checkpoint is the state dict itself
+        model.load_state_dict(checkpoint)
+
     model.to(device)
     model.eval()
     print("✓ Model loaded")

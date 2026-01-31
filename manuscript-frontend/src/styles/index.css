@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@400;600;700&family=Noto+Sans+Kannada:wght@400;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply overflow-x-hidden;
+    zoom: 0.9; /* Zoom out slightly for better page fit */
+  }
+
+  body {
+    @apply bg-gradient-to-br from-parchment-50 via-parchment-100 to-saffron-50 text-heritage-700 font-sans antialiased overflow-x-hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-heritage-600;
+  }
+
+  * {
+    @apply transition-colors duration-200;
+    box-sizing: border-box;
+  }
+
+  #root {
+    @apply overflow-x-hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply relative overflow-hidden bg-gradient-to-r from-saffron-400 to-saffron-500 hover:from-saffron-500 hover:to-saffron-600 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 hover:scale-105;
+  }
+
+  .btn-primary::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-full bg-white opacity-0 hover:opacity-20 transition-opacity duration-300;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-parchment-50 text-heritage-600 font-semibold py-3 px-8 rounded-xl transition-all duration-300 border-2 border-heritage-300 hover:border-saffron-400 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+  }
+
+  .card {
+    @apply bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl p-4 md:p-6 lg:p-8 border border-parchment-300/50 transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .card-elevated {
+    @apply bg-gradient-to-br from-white via-parchment-50 to-white rounded-2xl shadow-2xl p-4 md:p-6 lg:p-8 border border-saffron-200 transition-all duration-300 hover:shadow-heritage-lg hover:-translate-y-2;
+  }
+
+  .sanskrit-text {
+    @apply font-devanagari text-xl leading-loose text-heritage-700 bg-gradient-to-br from-parchment-50 to-white p-6 rounded-xl border-2 border-heritage-200 shadow-inner;
+  }
+
+  .glass-effect {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+
+  .hero-gradient {
+    @apply bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50;
+  }
+}
+
+/* Enhanced page transitions */
+.page-transition {
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* Prevent horizontal scroll on all pages */
+body, #root {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Ensure all containers respect screen width */
+.max-w-7xl,
+.max-w-6xl,
+.max-w-5xl,
+.max-w-4xl,
+.max-w-3xl,
+.max-w-2xl {
+  max-width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .max-w-7xl { max-width: 1280px; }
+  .max-w-6xl { max-width: 1152px; }
+  .max-w-5xl { max-width: 1024px; }
+  .max-w-4xl { max-width: 896px; }
+  .max-w-3xl { max-width: 768px; }
+  .max-w-2xl { max-width: 672px; }
+}
+
+/* Fix grid overflow on mobile */
+.grid {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Ensure images don't overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for absolute positioned elements */
+.relative {
+  overflow-x: hidden;
+}
+
+section {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Responsive text sizing */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+
+  .text-5xl, .text-6xl {
+    font-size: 2.5rem !important;
+  }
+
+  .text-4xl {
+    font-size: 2rem !important;
+  }
+}
+
+/* Reduce spacing on smaller screens */
+@media (max-width: 1024px) {
+  .py-20, .py-24 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  .py-16 {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+}
+
+/* Enhanced skeleton loader */
+.skeleton {
+  @apply animate-pulse bg-gradient-to-r from-parchment-200 via-parchment-300 to-parchment-200 rounded-lg;
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Decorative elements */
+.decorative-line {
+  @apply h-1 w-20 bg-gradient-to-r from-saffron-400 to-heritage-500 rounded-full mx-auto mb-6;
+}
+
+.section-divider {
+  @apply relative py-12;
+}
+
+.section-divider::before {
+  content: '';
+  @apply absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-0.5 bg-gradient-to-r from-transparent via-saffron-300 to-transparent;
+}
+
+/* Enhanced hover effects */
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl;
+}
+
+.hover-glow {
+  @apply transition-all duration-300;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 30px rgba(244, 196, 48, 0.4);
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-saffron-500 via-heritage-600 to-saffron-500 bg-clip-text text-transparent;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-parchment-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-saffron-400 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-saffron-500;
+}
+

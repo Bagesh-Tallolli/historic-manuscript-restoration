@@ -1,0 +1,81 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║   🕉️  SANSKRIT MANUSCRIPT PIPELINE - NOW RUNNING! 🕉️         ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✅ APPLICATION STATUS: RUNNING
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 ACCESS YOUR APPLICATION:
+
+   🌐 Local Access:
+   ➜  http://localhost:8501
+
+   🌐 Network Access (same network):
+   ➜  http://172.20.66.141:8501
+
+   🌐 External Access (internet):
+   ➜  http://106.51.196.158:8501
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 WHAT YOU CAN DO:
+
+1. Upload Sanskrit Manuscript Images
+2. Get Automatic Restoration
+3. Extract Sanskrit Text (OCR)
+4. Get English Translation
+5. View Side-by-Side Comparisons
+6. Download Results
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🛠️  QUICK COMMANDS:
+
+Stop Application:
+   pkill -f streamlit
+
+Restart Application:
+   cd /home/bagesh/EL-project
+   source venv/bin/activate
+   streamlit run app_professional.py --server.port 8501 --server.headless true &
+
+View Logs:
+   tail -f /home/bagesh/EL-project/streamlit_app.log
+
+Check Status:
+   ps aux | grep streamlit
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 SYSTEM INFO:
+
+Process ID: 4121
+Memory Usage: 53MB
+Port: 8501
+Mode: Headless (Background)
+Framework: Streamlit
+Python: 3.12 (venv)
+
+Model Files:
+   ✅ checkpoints/kaggle/final.pth (330MB)
+   ✅ checkpoints/kaggle/desti.pth (990MB)
+   ✅ checkpoints/kaggle/final_converted.pth (330MB)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 START USING NOW:
+
+1. Open browser
+2. Go to: http://localhost:8501
+3. Upload an image
+4. Watch the magic happen! ✨
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 TIP: Bookmark the URL for quick access!
+
+Last Updated: Nov 27, 2025 13:36
+

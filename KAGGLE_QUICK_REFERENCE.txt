@@ -1,0 +1,164 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    KAGGLE TRAINING - QUICK REFERENCE                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 SETUP (3 Steps)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. Upload: kaggle_training_notebook.ipynb to Kaggle
+  2. Enable: GPU T4 x2 (Settings → Accelerator → GPU)
+  3. Run: Click "Run All" and wait (~2-3 hours)
+
+🔑 ROBOFLOW CONFIG (Pre-configured - No Changes Needed!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  API Key:    EBJvHlgSWLyW1Ir6ctkH
+  Workspace:  neeew
+  Project:    yoyoyo-mptyx-ijqfp
+  Version:    1
+  URL:        https://app.roboflow.com/neeew/yoyoyo-mptyx-ijqfp
+
+⚙️  TRAINING CONFIG (Editable in Cell 9)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  IMG_SIZE     = 256        # Image resolution
+  BATCH_SIZE   = 16         # Batch size (reduce if OOM)
+  NUM_EPOCHS   = 100        # Training epochs
+  MODEL_SIZE   = 'base'     # tiny/small/base/large
+  NUM_WORKERS  = 2          # Data loading workers
+
+📊 MODEL SIZES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Size    Parameters    Memory    Speed      Quality    Recommended
+  ────────────────────────────────────────────────────────────────────
+  tiny    ~11M          ~2GB      Fast       Good       Testing
+  small   ~22M          ~4GB      Medium     Better     Quick train
+  base    ~86M          ~8GB      Slow       Best       Production ✓
+  large   ~307M         ~16GB     Slower     Best       High-end GPU
+
+📁 AUTO-CREATED STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /kaggle/working/
+  ├── dataset/                    # ← Auto-downloaded from Roboflow
+  │   ├── train/
+  │   ├── valid/
+  │   └── test/
+  ├── checkpoints/                # ← Auto-created during training
+  │   ├── best_psnr.pth          # ← DOWNLOAD THIS! (best model)
+  │   ├── final.pth
+  │   ├── epoch_10.pth
+  │   └── epoch_20.pth
+  └── results_visualization.png
+
+🎯 EXPECTED PERFORMANCE (100 epochs)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Metric    Target Range    Interpretation
+  ────────────────────────────────────────────────
+  PSNR      28-35 dB        Higher is better
+  SSIM      0.85-0.95       Closer to 1 is better
+  LPIPS     0.05-0.15       Lower is better
+
+⏱️  TRAINING TIME (Kaggle GPU T4)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Config         Time/Epoch    Total (100 epochs)
+  ────────────────────────────────────────────────
+  tiny + BS16    ~1 min        ~1.5 hours
+  small + BS16   ~2 min        ~3 hours
+  base + BS16    ~3 min        ~5 hours ✓ (Recommended)
+  large + BS8    ~6 min        ~10 hours
+
+🎨 SYNTHETIC DEGRADATIONS (Automatic)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✓ Gaussian Noise (σ=0.01-0.08)
+  ✓ Gaussian Blur (kernel=3,5,7)
+  ✓ Contrast Reduction (α=0.6-0.9)
+  ✓ Salt & Pepper Noise (0.1-1%)
+  ✓ Yellow Tint (aging effect)
+  ✓ Circular Stains (random positions)
+
+💾 DOWNLOADING TRAINED MODEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Method 1: Click download links in Cell 14
+  Method 2: Right sidebar → Output → Download files
+
+  Files to download:
+  ✓ best_psnr.pth (MAIN MODEL - use this!)
+  ✓ results_visualization.png (sample outputs)
+
+🐛 TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Problem              Solution
+  ────────────────────────────────────────────────────────────────────
+  Dataset fails        ✓ Check Roboflow API key in Cell 3
+                       ✓ Check internet connection
+
+  Out of memory        ✓ Reduce BATCH_SIZE to 8 or 4
+                       ✓ Use smaller MODEL_SIZE ('small' or 'tiny')
+
+  Training too slow    ✓ Verify GPU is enabled
+                       ✓ Use smaller model ('small' instead of 'base')
+
+  No GPU available     ✓ Check Kaggle GPU quota (30h/week free)
+                       ✓ Wait for GPU to become available
+
+📊 MONITORING TRAINING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Watch for this output after each epoch:
+
+  Epoch 1/100
+    Train: loss: 0.1234 | psnr: 25.67 | ssim: 0.82
+    Val:   loss: 0.1123 | psnr: 26.45 | ssim: 0.84
+    ✓ New best PSNR: 26.45
+
+  ✓ Loss should decrease
+  ✓ PSNR should increase
+  ✓ SSIM should increase
+  ✓ "New best PSNR" means model is improving!
+
+🔄 USING TRAINED MODEL LOCALLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  import torch
+  from models.vit_restorer import ViTRestorer
+
+  # Create model
+  model = ViTRestorer(img_size=256, embed_dim=768,
+                      depth=12, num_heads=12)
+
+  # Load weights
+  checkpoint = torch.load('best_psnr.pth')
+  model.load_state_dict(checkpoint['model_state_dict'])
+  model.eval()
+
+  # Inference
+  with torch.no_grad():
+      restored = model(degraded_image)
+
+✅ PRE-FLIGHT CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [ ] Uploaded kaggle_training_notebook.ipynb to Kaggle
+  [ ] Enabled GPU T4 x2 accelerator
+  [ ] Verified Roboflow config in Cell 3 (already set!)
+  [ ] (Optional) Adjusted hyperparameters in Cell 9
+  [ ] Ready to click "Run All"
+
+🎉 SUCCESS INDICATORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  You'll see this when training completes:
+
+  ════════════════════════════════════════════════════════════════════
+  ✅ TRAINING COMPLETED SUCCESSFULLY!
+  ════════════════════════════════════════════════════════════════════
+  📁 Checkpoints saved to: /kaggle/working/checkpoints/
+  🏆 Best model: /kaggle/working/checkpoints/best_psnr.pth
+  📊 Best validation PSNR: 32.45
+  ════════════════════════════════════════════════════════════════════
+
+📞 QUICK LINKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Kaggle:           https://www.kaggle.com
+  Roboflow Project: https://app.roboflow.com/neeew/yoyoyo-mptyx-ijqfp
+  Full Guide:       KAGGLE_NOTEBOOK_GUIDE.md
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         🚀 READY TO TRAIN! 🚀                                ║
+║                                                                              ║
+║  Upload notebook → Enable GPU → Run All → Download model                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+

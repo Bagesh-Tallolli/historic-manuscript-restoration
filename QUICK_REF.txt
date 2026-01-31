@@ -1,0 +1,78 @@
+╔════════════════════════════════════════════════════════════════╗
+║                 QUICK REFERENCE CARD                           ║
+║          Sanskrit Manuscript Restoration Project               ║
+╚════════════════════════════════════════════════════════════════╝
+
+📍 STATUS: ✅ READY TO USE
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 QUICKEST START:
+
+   bash quick_start_kaggle.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 MAIN COMMANDS:
+
+1. Test Model:
+   source activate_venv.sh
+   python inference.py \
+       --checkpoint checkpoints/kaggle/final_converted.pth \
+       --input data/raw/test/ \
+       --output output/results
+
+2. Web Interface:
+   source activate_venv.sh
+   streamlit run app.py
+
+3. Full Pipeline:
+   python main.py \
+       --image_path manuscript.jpg \
+       --restoration_model checkpoints/kaggle/final_converted.pth
+
+4. API Server:
+   python api_server.py \
+       --checkpoint checkpoints/kaggle/final_converted.pth
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 YOUR MODEL:
+
+Location: checkpoints/kaggle/final_converted.pth
+Size: 330 MB
+Parameters: 86.4M
+Status: ✅ Trained & Tested (59 images)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 RECENT FIXES:
+
+✅ Model checkpoint format conversion
+✅ Streamlit app AttributeError fixed
+✅ All scripts updated for compatibility
+✅ README.md updated
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION:
+
+📄 READY_TO_USE.md          - Start here!
+📄 STREAMLIT_FIX.md         - Latest fix details
+📄 KAGGLE_INTEGRATION_*.md  - Model setup
+📄 START.sh                 - Quick reference
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆘 HELP:
+
+bash quick_start_kaggle.sh     → Interactive menu
+bash START.sh                   → Show quick start
+python inference.py --help      → Command help
+cat READY_TO_USE.md            → Full guide
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ Last Updated: November 24, 2025
+🕉️ Sanskrit Manuscript Restoration is READY! 📜
+

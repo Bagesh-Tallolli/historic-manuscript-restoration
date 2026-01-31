@@ -23,26 +23,22 @@ Get it from:
 - GitHub: https://github.com/Bagesh-Tallolli/historic-manuscript-restoration
 - Local file: `/home/bagesh/EL-project/kaggle_training_notebook.py`
 
-### STEP 3: Configure & Run (2 minutes)
+**✨ GOOD NEWS:** The notebook is **already configured** with your Roboflow dataset!
+- API Key: Pre-filled ✅
+- Workspace: `neeew` ✅
+- Project: `yoyoyo-mptyx-ijqfp` ✅
+- Just run it! No configuration needed!
 
-In the `main()` function, choose ONE dataset method and set it to `True`:
+### STEP 3: Run Training (1 click!)
 
-```python
-# Pick ONE method:
-USE_ROBOFLOW = True        # Download from Roboflow
-USE_KAGGLE_DATASET = False # Download from Kaggle Dataset
-USE_URL_DOWNLOAD = False   # Download from URL
-USE_GOOGLE_DRIVE = False   # Download from Google Drive
-USE_KAGGLE_INPUT = False   # Use manually uploaded dataset
-USE_SAMPLE_DATASET = False # Use synthetic test data
-```
-
-Then run:
+Simply run:
 ```python
 # Cell 3
 if __name__ == "__main__":
     main()
 ```
+
+**That's it!** The dataset will download automatically and training will start!
 
 ---
 
@@ -155,29 +151,30 @@ Creates 50 synthetic images automatically. No real dataset needed!
 
 ## 📊 Full Configuration Example
 
-Here's a complete working example:
+Here's what's already configured in your notebook:
 
 ```python
 def main():
-    # ========== CHOOSE YOUR DATASET METHOD ==========
+    # ========== DATASET METHOD ==========
     
-    # Using Roboflow (recommended)
+    # ✅ ALREADY CONFIGURED - Your Roboflow manuscript dataset
     USE_ROBOFLOW = True
     ROBOFLOW_CONFIG = {
-        'api_key': 'abc123xyz789',
-        'workspace': 'university-archive',
-        'project': 'sanskrit-manuscripts',
-        'version': 2
+        'api_key': 'EBJvHlgSWLyW1Ir6ctkH',
+        'workspace': 'neeew',
+        'project': 'yoyoyo-mptyx-ijqfp',
+        'version': 1
     }
+    # Project: https://app.roboflow.com/neeew/yoyoyo-mptyx-ijqfp
     
-    # Set all others to False
+    # All others are disabled
     USE_KAGGLE_DATASET = False
     USE_URL_DOWNLOAD = False
     USE_GOOGLE_DRIVE = False
     USE_KAGGLE_INPUT = False
     USE_SAMPLE_DATASET = False
     
-    # ========== TRAINING SETTINGS ==========
+    # ========== TRAINING SETTINGS (You can modify these) ==========
     IMG_SIZE = 256
     BATCH_SIZE = 16
     NUM_EPOCHS = 100
@@ -186,6 +183,9 @@ def main():
     
     # ... rest of the code runs automatically ...
 ```
+
+**Note:** You can change the training settings (batch size, epochs, model size) if needed,
+but the dataset configuration is ready to go!
 
 ---
 
@@ -463,10 +463,12 @@ You now have everything you need:
 2. Enable GPU + Internet
 3. !pip install einops lpips roboflow gdown kaggle -q
 4. Copy kaggle_training_notebook.py content
-5. Configure ONE dataset method
-6. Run main()
-7. Download trained model
+5. Run main() - That's it! (Already configured with your Roboflow dataset)
+6. Wait for training to complete
+7. Download trained model (best_psnr.pth)
 ```
+
+**No configuration needed!** Your Roboflow credentials are already hardcoded.
 
 **Let's train some models! 🎉**
 
