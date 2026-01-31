@@ -20,7 +20,11 @@ def test_pipeline():
     # Configuration
     model_path = "checkpoints/kaggle/final.pth"
     google_api_key = os.getenv('GOOGLE_CLOUD_API_KEY', 'd48382987f9cddac6b042e3703797067fd46f2b0')
-    gemini_api_key = os.getenv('GEMINI_API_KEY', 'AIzaSyBIORWk0PZThY5m3yCudftd3sssnZADi_A')
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    gemini_api_key = os.getenv('GEMINI_API_KEY', '')
 
     # Find a test image
     test_images = list(Path('data/raw/test').glob('*.jpg'))

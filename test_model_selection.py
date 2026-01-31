@@ -1,9 +1,12 @@
 """
 Quick test of model selection fix
 """
+import os
+from dotenv import load_dotenv
 from google import genai
 
-API_KEY = "AIzaSyAxTN1rfdyJQVE3ecy5d8Zqkl5I431nBh0"
+load_dotenv()
+API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 print("Testing model selection...")
 

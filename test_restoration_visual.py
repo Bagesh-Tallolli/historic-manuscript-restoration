@@ -3,9 +3,13 @@
 Visual comparison test - Check if restoration is visually improving images
 """
 import sys
+import os
 import cv2
 import numpy as np
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 sys.path.insert(0, '/home/bagesh/EL-project')
 
@@ -19,8 +23,8 @@ print("="*70)
 print("\nInitializing pipeline...")
 pipeline = SanskritManuscriptPipeline(
     restoration_model_path='checkpoints/kaggle/final.pth',
-    google_api_key='d48382987f9cddac6b042e3703797067fd46f2b0',
-    gemini_api_key='AIzaSyBIORWk0PZThY5m3yCudftd3sssnZADi_A',
+    google_api_key=os.getenv('GOOGLE_API_KEY', ''),
+    gemini_api_key=os.getenv('GEMINI_API_KEY', ''),
     device='cpu'
 )
 

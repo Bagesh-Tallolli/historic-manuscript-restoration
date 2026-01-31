@@ -22,7 +22,10 @@ from skimage.metrics import peak_signal_noise_ratio as psnr
 from models.vit_restorer import create_vit_restorer
 
 # Configuration
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyAxTN1rfdyJQVE3ecy5d8Zqkl5I431nBh0")
+from dotenv import load_dotenv
+load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 DEFAULT_MODEL = "gemini-2.0-flash-exp"
 VIT_CHECKPOINT = "checkpoints/kaggle/final_converted.pth"  # Default to kaggle converted checkpoint
 

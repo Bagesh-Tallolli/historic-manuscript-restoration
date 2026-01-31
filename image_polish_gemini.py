@@ -77,7 +77,7 @@ with st.sidebar:
     api_key = st.text_input(
         "Gemini API Key",
         type="password",
-        value=os.getenv("GEMINI_API_KEY", "AIzaSyAxTN1rfdyJQVE3ecy5d8Zqkl5I431nBh0"),
+        value=os.getenv("GEMINI_API_KEY", ""),
         help="Enter your Google Gemini API key"
     )
 

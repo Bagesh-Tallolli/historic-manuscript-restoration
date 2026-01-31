@@ -14,7 +14,10 @@ from google import genai
 from google.genai import types
 
 # Configuration
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyAxTN1rfdyJQVE3ecy5d8Zqkl5I431nBh0")
+from dotenv import load_dotenv
+load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 DEFAULT_MODEL = "gemini-2.0-flash-exp"
 
 # COMPLETE AGENT PROMPT
